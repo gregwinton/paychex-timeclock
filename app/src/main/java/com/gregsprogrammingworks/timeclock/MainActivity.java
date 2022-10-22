@@ -1,10 +1,10 @@
-package com.gregsprogrammingworks.timeout.timecard;
+package com.gregsprogrammingworks.timeclock;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import com.gregsprogrammingworks.timeout.timecard.ui.main.MainFragment;
+import com.gregsprogrammingworks.timeclock.ui.main.MainFragment;
 
 public class MainActivity extends AppCompatActivity {
 

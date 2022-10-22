@@ -1,4 +1,4 @@
-package com.gregsprogrammingworks.timeout.timecard;
+package com.gregsprogrammingworks.timeclock;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.gregsprogrammingworks.timeout.timecard", appContext.getPackageName());
+        assertEquals("com.gregsprogrammingworks.timecard", appContext.getPackageName());
     }
 }

@@ -1,4 +1,4 @@
-package com.gregsprogrammingworks.timeout.timecard;
+package com.gregsprogrammingworks.timeclock;
 
 import org.junit.Test;
 

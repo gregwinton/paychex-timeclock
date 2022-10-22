@@ -1,8 +1,4 @@
-package com.gregsprogrammingworks.timeout.timecard.model;
-
-import androidx.annotation.NonNull;
-
-import java.util.regex.Pattern;
+package com.gregsprogrammingworks.timeclock.model;
 
 /**
  * Employee model class. In order to use the system, a user
@@ -14,10 +10,10 @@ public class Employee {
     static private final String TAG = Employee.class.getSimpleName();
 
     /// Unique identifier of employee - read only
-    private final String _id;
+    private final String mId;
 
     /// Free-form text employee name - may not be unique and may be edited
-    private String _name;
+    private String mName;
 
     /**
      * Employee constructor with unique id and name
@@ -33,8 +29,8 @@ public class Employee {
         ValidNameOrThrow(name);
 
         // If we're still here, they're valid => store them
-        _id = id;
-        _name = name;
+        mId = id;
+        mName = name;
     }
 
     /**
@@ -42,7 +38,7 @@ public class Employee {
      * @return unique identifier of employee
      */
     public String getId() {
-        return _id;
+        return mId;
     }
 
     /**
@@ -50,7 +46,7 @@ public class Employee {
      * @return employee name
      */
     public String getName() {
-        return _name;
+        return mName;
     }
 
     /**
@@ -60,7 +56,7 @@ public class Employee {
      */
     public void setName(String name) {
         ValidNameOrThrow(name);
-        _name = name;
+        mName = name;
     }
 
     /**
