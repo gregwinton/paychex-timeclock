@@ -24,12 +24,12 @@ public class WorkShift {
         return retval;
     }
 
-    boolean canStartShift() {
+    public boolean canStartShift() {
         boolean retval = !mTotalTime.isStarted();
         return retval;
     }
 
-    boolean canEndShift() {
+    public boolean canEndShift() {
         boolean retval = true;
 
         // Can't end if we're not active
@@ -64,7 +64,7 @@ public class WorkShift {
         return retval;
     }
 
-    boolean canStartBreak() {
+    public boolean canStartBreak() {
         boolean retval = true;
 
         // Can't start lunch if we're not active
@@ -85,18 +85,18 @@ public class WorkShift {
         return retval;
     }
 
-    boolean canEndBreak() {
+    public boolean canEndBreak() {
 
         boolean onBreak = mBreakTime.isActive();
         return onBreak;
     }
 
     public void startBreak() throws IllegalStateException {
-        mTotalTime.start();
+        mBreakTime.start();
     }
 
     public void endBreak() throws IllegalStateException {
-        mTotalTime.end();
+        mBreakTime.end();
     }
 
     public long breakSeconds() {
@@ -104,7 +104,7 @@ public class WorkShift {
         return retval;
     }
 
-    boolean canStartLunch() {
+    public boolean canStartLunch() {
         boolean retval = true;
 
         // Can't start lunch if we're not active
@@ -125,21 +125,21 @@ public class WorkShift {
         return retval;
     }
 
-    boolean canEndLunch() {
+    public boolean canEndLunch() {
         boolean outToLunch = mLunchTime.isActive();
         return outToLunch;
     }
 
     public void startLunch() throws IllegalStateException {
-        mTotalTime.start();
+        mLunchTime.start();
     }
 
     public void endLunch() throws IllegalStateException {
-        mTotalTime.end();
+        mLunchTime.end();
     }
 
     public long lunchSeconds() {
-        long retval = mBreakTime.elapsedSeconds();
+        long retval = mLunchTime.elapsedSeconds();
         return retval;
     }
 }
