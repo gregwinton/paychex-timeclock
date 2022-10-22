@@ -8,14 +8,14 @@ import com.gregsprogrammingworks.timeclock.model.EmployeeStore;
 
 import java.util.List;
 
-public class EmployeesViewModel extends ViewModel {
+public class EmployeeViewModel extends ViewModel {
 
     private static final String TAG = ViewModel.class.getSimpleName();
 
     private EmployeeStore mEmployeeStore;
     private MutableLiveData<List<Employee>> mEmployeesLiveData;
 
-    public EmployeesViewModel() {
+    public EmployeeViewModel() {
         mEmployeeStore = new EmployeeStore();
     }
 
