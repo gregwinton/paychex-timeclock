@@ -31,11 +31,8 @@ public class WorkShiftStore {
         Enumeration<MutableLiveData<WorkShift>> keyEnum = mOpenWorkShifts.elements();
         while (keyEnum.hasMoreElements()) {
             MutableLiveData<WorkShift> liveData = keyEnum.nextElement();
-            if (liveData.hasActiveObservers()) {
-                synchronized (liveData) {
-                    liveData.notifyAll();
-                }
-            }
+            WorkShift shift = liveData.getValue();;
+            liveData.postValue(shift);
         }
     }
 
@@ -52,5 +49,13 @@ public class WorkShiftStore {
     public MutableLiveData<List<WorkShift>> getWorkShiftsFor(String employeeId) {
         // TODO: Implement this method
         return null;
+    }
+
+    private void notifyWorkShift(MutableLiveData<WorkShift> liveData) {
+        if (liveData.hasActiveObservers()) {
+            synchronized (liveData) {
+                liveData.notifyAll();
+            }
+        }
     }
 }

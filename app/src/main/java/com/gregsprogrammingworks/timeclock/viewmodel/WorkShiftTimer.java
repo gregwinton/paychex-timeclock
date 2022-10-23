@@ -1,4 +1,4 @@
-package com.gregsprogrammingworks.timeclock.ui.main;
+package com.gregsprogrammingworks.timeclock.viewmodel;
 
 import com.gregsprogrammingworks.timeclock.store.WorkShiftStore;
 

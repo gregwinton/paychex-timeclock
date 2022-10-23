@@ -1,34 +1,33 @@
 package com.gregsprogrammingworks.timeclock.ui.main;
 
+import com.gregsprogrammingworks.common.TimeSlice;
+
 public class WorkShiftTimeSliceData {
     private static final String TAG = WorkShiftTimeSliceData.class.getSimpleName();
+    final String mSliceLabel;
+    final TimeSlice mTimeSlice;
 
-    final String sliceText;
-    final String startText;
-    final String endText;
-    final String elapsedText;
-
-    WorkShiftTimeSliceData(String sliceText, String startText, String endText, String elapsedText) {
-
-        ValidParamsOrThrow(sliceText, startText, endText, elapsedText);
-
-        this.sliceText = sliceText;
-        this.startText = startText;
-        this.endText = endText;
-        this.elapsedText = elapsedText;
+    WorkShiftTimeSliceData(String sliceLabel, TimeSlice timeSlice)
+            throws  IllegalArgumentException {
+        ValidParamsOrThrow(sliceLabel, timeSlice);
+        mSliceLabel = sliceLabel;
+        mTimeSlice = timeSlice;
     }
 
-    private static void ValidParamsOrThrow(String sliceText, String startText, String endText, String elapsedText) {
-//        if (null != sliceText) {
-//            return;
-//        }
-        if (null != startText && 0 < startText.length()) {
+    String getSliceLabel() {
+        return mSliceLabel;
+    }
+
+    TimeSlice getTimeSlice() {
+        return mTimeSlice;
+    }
+
+    private static void ValidParamsOrThrow(String sliceLabel, TimeSlice timeSlice)
+            throws  IllegalArgumentException {
+        if (timeSlice.isActive()) {
             return;
         }
-        if (null != endText && 0 < endText.length()) {
-            return;
-        }
-        if (null != elapsedText && 0 < elapsedText.length()) {
+        else if (timeSlice.isComplete()) {
             return;
         }
 

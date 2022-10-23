@@ -1,4 +1,4 @@
-package com.gregsprogrammingworks.timeclock.ui.main;
+package com.gregsprogrammingworks.timeclock.viewmodel;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;

@@ -11,6 +11,10 @@ public class TimeSlice {
     Date mStartDate = kNilDate;
     Date mEndDate = kNilDate;
 
+    public static boolean isNilDate(Date date) {
+        return kNilDate.equals(date);
+    }
+
     public TimeSlice() {
     }
 
@@ -24,9 +28,10 @@ public class TimeSlice {
         if (isStarted())
         {
             Date endDate = ! kNilDate.equals(mEndDate) ? mEndDate : new Date();
-            long startSeconds = mStartDate.getTime();
-            long endSeconds = endDate.getTime();
-            elapsedSeconds = endSeconds - startSeconds;
+            long startMillis = mStartDate.getTime();
+            long endMillis = endDate.getTime();
+            long elapsedMillis = endMillis - startMillis;
+            elapsedSeconds = elapsedMillis / 1000;
         }
         return elapsedSeconds;
     }
@@ -76,9 +81,5 @@ public class TimeSlice {
 
     public Date getEnd() {
         return mEndDate;
-    }
-
-    private static boolean isNilDate(Date date) {
-        return kNilDate.equals(date);
     }
 }

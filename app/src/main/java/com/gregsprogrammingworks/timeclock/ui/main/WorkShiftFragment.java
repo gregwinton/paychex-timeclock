@@ -19,6 +19,7 @@ import android.widget.ListView;
 
 import com.gregsprogrammingworks.timeclock.R;
 import com.gregsprogrammingworks.timeclock.model.WorkShift;
+import com.gregsprogrammingworks.timeclock.viewmodel.WorkShiftViewModel;
 
 ///@// TODO: 10/22/22 Move some of this function to WorkShiftViewModel
 public class WorkShiftFragment extends Fragment {
