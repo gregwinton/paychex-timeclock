@@ -15,33 +15,10 @@ import com.gregsprogrammingworks.timeclock.store.WorkShiftStore;
 
      public MutableLiveData<WorkShift> openWorkShiftFor(String employeeId) {
          MutableLiveData<WorkShift> retval = mWorkShiftStore.openWorkShiftFor(employeeId);
-         maybeStartThread();
          return retval;
      }
 
-     Thread mTimerThread = null;
-
-     private void maybeStartThread() {
-         if (null != mTimerThread) {
-             return;
-         }
-
-         mTimerThread = new Thread(new Runnable() {
-             @Override
-             public void run() {
-                 boolean done = false;
-                 while (!done && 0 < mWorkShiftStore.getOpenWorkShiftCount()) {
-
-                    try {
-                        mWorkShiftStore.signalOpenWorkShifts();
-                        Thread.sleep(500);
-                    }
-                    catch (InterruptedException ex) {
-                        done = true;
-                   }
-                 }
-                 mTimerThread = null;
-             }
-         });
+     public WorkShiftViewModel() {
+         WorkShiftTimer.maybeStartThread();
      }
 }

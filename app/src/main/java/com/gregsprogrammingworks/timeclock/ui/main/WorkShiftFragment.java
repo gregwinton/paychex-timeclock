@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 
 import com.gregsprogrammingworks.timeclock.R;
 import com.gregsprogrammingworks.timeclock.model.WorkShift;
@@ -32,6 +33,7 @@ public class WorkShiftFragment extends Fragment {
     private ButtonAssistant mShiftButtonAsst;
     private ButtonAssistant mBreakButtonAsst;
     private ButtonAssistant mLunchButtonAsst;
+    private ListView mTimeSliceListView;
 
     public static WorkShiftFragment newInstance(String employeeId) {
         return new WorkShiftFragment(employeeId);
@@ -53,6 +55,10 @@ public class WorkShiftFragment extends Fragment {
         mShiftButtonAsst = new ButtonAssistant(view, R.id.ShiftButton, mShiftButtonClickListener);
         mBreakButtonAsst = new ButtonAssistant(view, R.id.BreakButton, mBreakButtonClickListener);
         mLunchButtonAsst = new ButtonAssistant(view, R.id.LunchButton, mLunchButtonClickListener);
+        mTimeSliceListView = view.findViewById(R.id.TimeSliceListView);
+
+        WorkShiftTimeSliceAdapter adapter = new WorkShiftTimeSliceAdapter(mWorkShiftLiveData, getContext());
+        mTimeSliceListView.setAdapter(adapter);
 
         return view;
     }
@@ -113,6 +119,7 @@ public class WorkShiftFragment extends Fragment {
             maybeUpdateShiftButton(workShift);
             maybeUpdateBreakButton(workShift);
             maybeUpdateLunchButton(workShift);
+            maybeUpdateTimeSliceListView();
         }
 
         private void maybeUpdateShiftButton(WorkShift workShift) {
@@ -156,6 +163,13 @@ public class WorkShiftFragment extends Fragment {
             }
             mLunchButtonAsst.maybeUpdate(label, enable);
         }
+
+        private void maybeUpdateTimeSliceListView() {
+            WorkShiftTimeSliceAdapter adapter =
+                    (WorkShiftTimeSliceAdapter) mTimeSliceListView.getAdapter();
+
+            adapter.refresh();
+        }
     };
 
     private class ButtonAssistant {
@@ -174,7 +188,7 @@ public class WorkShiftFragment extends Fragment {
             }
         }
 
-        private void updateButton( String label, boolean enable) {
+        private void updateButton(String label, boolean enable) {
             // Get a handler that can be used to post to the main thread
             Handler mainHandler = new Handler(getContext().getMainLooper());
 

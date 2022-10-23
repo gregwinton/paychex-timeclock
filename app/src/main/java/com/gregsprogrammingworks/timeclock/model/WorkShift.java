@@ -146,6 +146,10 @@ public class WorkShift {
         mLunchTimeSlice.end();
     }
 
+    public TimeSlice getLunchTimeSlice() {
+        return mLunchTimeSlice;
+    }
+
     public long lunchSeconds() {
         long retval = mLunchTimeSlice.elapsedSeconds();
         return retval;

@@ -32,7 +32,9 @@ public class WorkShiftStore {
         while (keyEnum.hasMoreElements()) {
             MutableLiveData<WorkShift> liveData = keyEnum.nextElement();
             if (liveData.hasActiveObservers()) {
-                liveData.notifyAll();
+                synchronized (liveData) {
+                    liveData.notifyAll();
+                }
             }
         }
     }

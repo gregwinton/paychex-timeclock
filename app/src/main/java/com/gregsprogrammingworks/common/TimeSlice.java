@@ -14,6 +14,11 @@ public class TimeSlice {
     public TimeSlice() {
     }
 
+    protected TimeSlice(TimeSlice that) {
+        mStartDate = that.mStartDate;
+        mEndDate = that.mEndDate;
+    }
+
     public long elapsedSeconds() {
         long elapsedSeconds = 0;
         if (isStarted())
@@ -29,7 +34,7 @@ public class TimeSlice {
     public boolean isActive() {
         boolean retval = false;
         if (isStarted()) {
-            if (! isEnded()) {
+            if (! isComplete()) {
                 retval = true;
             }
         }
@@ -42,7 +47,7 @@ public class TimeSlice {
         return isStarted;
     }
 
-    public boolean isEnded() {
+    public boolean isComplete() {
         Date end = getEnd();
         boolean isEnded = !isNilDate(end);
         return isEnded;
