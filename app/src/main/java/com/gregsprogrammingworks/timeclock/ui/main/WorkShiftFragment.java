@@ -19,6 +19,7 @@ import android.widget.Button;
 import com.gregsprogrammingworks.timeclock.R;
 import com.gregsprogrammingworks.timeclock.model.WorkShift;
 
+///@// TODO: 10/22/22 Move some of this function to WorkShiftViewModel
 public class WorkShiftFragment extends Fragment {
 
     private static final String TAG = WorkShiftFragment.class.getSimpleName();
@@ -28,9 +29,9 @@ public class WorkShiftFragment extends Fragment {
     private WorkShiftViewModel mViewModel;
     private MutableLiveData<WorkShift> mWorkShiftLiveData;
 
-    private Button mShiftButton;
-    private Button mBreakButton;
-    private Button mLunchButton;
+    private ButtonAssistant mShiftButtonAsst;
+    private ButtonAssistant mBreakButtonAsst;
+    private ButtonAssistant mLunchButtonAsst;
 
     public static WorkShiftFragment newInstance(String employeeId) {
         return new WorkShiftFragment(employeeId);
@@ -40,7 +41,7 @@ public class WorkShiftFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(WorkShiftViewModel.class);
-        mWorkShiftLiveData = mViewModel.activeWorkShiftFor(mEmployeeId);
+        mWorkShiftLiveData = mViewModel.openWorkShiftFor(mEmployeeId);
         mWorkShiftLiveData.observe(this, mWorkShiftObserver);
     }
 
@@ -48,12 +49,11 @@ public class WorkShiftFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_work_shift, container, false);
-        mShiftButton = view.findViewById(R.id.ShiftButton);
-        mShiftButton.setOnClickListener(mShiftButtonClickListener);
-        mBreakButton = view.findViewById(R.id.BreakButton);
-        mBreakButton.setOnClickListener(mBreakButtonClickListener);
-        mLunchButton = view.findViewById(R.id.LunchButton);
-        mLunchButton.setOnClickListener(mLunchButtonClickListener);
+
+        mShiftButtonAsst = new ButtonAssistant(view, R.id.ShiftButton, mShiftButtonClickListener);
+        mBreakButtonAsst = new ButtonAssistant(view, R.id.BreakButton, mBreakButtonClickListener);
+        mLunchButtonAsst = new ButtonAssistant(view, R.id.LunchButton, mLunchButtonClickListener);
+
         return view;
     }
 
@@ -110,7 +110,12 @@ public class WorkShiftFragment extends Fragment {
 
         @Override
         public void onChanged(WorkShift workShift) {
+            maybeUpdateShiftButton(workShift);
+            maybeUpdateBreakButton(workShift);
+            maybeUpdateLunchButton(workShift);
+        }
 
+        private void maybeUpdateShiftButton(WorkShift workShift) {
             boolean enable = false;
             String label = "Shift";    // todo: move to strings.xml
             if (workShift.canStartShift()) {
@@ -121,10 +126,12 @@ public class WorkShiftFragment extends Fragment {
                 enable = true;
                 label = "End Shift";   // todo: move to strings.xml
             }
-            updateButton(mShiftButton, enable, label);
+            mShiftButtonAsst.maybeUpdate(label, enable);
+        }
 
-            enable = false;
-            label = "Break";            // todo: move to strings.xml
+        private void maybeUpdateBreakButton(WorkShift workShift) {
+            boolean enable = false;
+            String label = "Break";            // todo: move to strings.xml
             if (workShift.canStartBreak()) {
                 enable = true;
                 label = "Start Break"; // todo: move to strings.xml
@@ -133,10 +140,12 @@ public class WorkShiftFragment extends Fragment {
                 enable = true;
                 label = "End Break";   // todo: move to strings.xml
             }
-            updateButton(mBreakButton, enable, label);
+            mBreakButtonAsst.maybeUpdate(label, enable);
+        }
 
-            enable = false;
-            label = "Lunch";    // todo: move to strings.xml
+        private void maybeUpdateLunchButton(WorkShift workShift) {
+            boolean enable = false;
+            String label = "Lunch";    // todo: move to strings.xml
             if (workShift.canStartLunch()) {
                 enable = true;
                 label = "Start Lunch"; // todo: move to strings.xml
@@ -145,21 +154,38 @@ public class WorkShiftFragment extends Fragment {
                 enable = true;
                 label = "End Lunch";   // todo: move to strings.xml
             }
-            updateButton(mLunchButton, enable, label);
+            mLunchButtonAsst.maybeUpdate(label, enable);
+        }
+    };
+
+    private class ButtonAssistant {
+        private final Button mButton;
+
+        public ButtonAssistant(View view, int resId, View.OnClickListener onClickListener) {
+            mButton = view.findViewById(resId);
+            mButton.setOnClickListener(onClickListener);
         }
 
-        private void updateButton(Button button, boolean enable, String label) {
+        public void maybeUpdate(String label, boolean enable) {
+            String btnLabel = mButton.toString();
+            boolean btnEnabled = mButton.isEnabled();
+            if (! btnLabel.equals(label) || (btnEnabled == enable)) {
+                updateButton(label, enable);
+            }
+        }
+
+        private void updateButton( String label, boolean enable) {
             // Get a handler that can be used to post to the main thread
             Handler mainHandler = new Handler(getContext().getMainLooper());
 
             Runnable myRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    button.setEnabled(enable);
-                    button.setText(label);
+                    mButton.setEnabled(enable);
+                    mButton.setText(label);
                 }
             };
             mainHandler.post(myRunnable);
         }
-    };
+    }
 }

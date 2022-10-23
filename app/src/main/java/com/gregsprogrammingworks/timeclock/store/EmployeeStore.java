@@ -1,8 +1,10 @@
-package com.gregsprogrammingworks.timeclock.model;
+package com.gregsprogrammingworks.timeclock.store;
 
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
+
+import com.gregsprogrammingworks.timeclock.model.Employee;
 
 import java.util.ArrayList;
 import java.util.List;

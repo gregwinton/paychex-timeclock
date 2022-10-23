@@ -19,14 +19,14 @@
             <Button
                 android:id="@+id/ShiftButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="33"
                 android:layout_margin="10px"
                 android:text="Start"/>
             <Button
                 android:id="@+id/BreakButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="33"
                 android:layout_margin="10px"
                 android:text="Break"/>
@@ -34,7 +34,7 @@
             <Button
                 android:id="@+id/LunchButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_margin="10px"
                 android:layout_weight="33"
                 android:text="Lunch" />

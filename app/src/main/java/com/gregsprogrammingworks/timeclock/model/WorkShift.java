@@ -8,24 +8,31 @@ public class WorkShift {
 
     private final String mId;
 
-    private final TimeSlice mTotalTime;
-    private final TimeSlice mBreakTime;
-    private final TimeSlice mLunchTime;
+    private final TimeSlice mShiftTimeSlice;
+    private final TimeSlice mBreakTimeSlice;
+    private final TimeSlice mLunchTimeSlice;
 
     public WorkShift(String id) {
         mId = id;
-        mTotalTime = new TimeSlice();
-        mBreakTime = new TimeSlice();
-        mLunchTime = new TimeSlice();
+        mShiftTimeSlice = new TimeSlice();
+        mBreakTimeSlice = new TimeSlice();
+        mLunchTimeSlice = new TimeSlice();
     }
 
-    public long elapsedSeconds() {
-        long retval = mTotalTime.elapsedSeconds();
+    public long onTheClockSeconds() {
+        long retval = shiftSeconds();
+        retval -= breakSeconds();
+        retval -= lunchSeconds();
+        return retval;
+    }
+
+    public long shiftSeconds() {
+        long retval = mShiftTimeSlice.elapsedSeconds();
         return retval;
     }
 
     public boolean canStartShift() {
-        boolean retval = !mTotalTime.isStarted();
+        boolean retval = !mShiftTimeSlice.isStarted();
         return retval;
     }
 
@@ -33,52 +40,49 @@ public class WorkShift {
         boolean retval = true;
 
         // Can't end if we're not active
-        if (!mTotalTime.isActive()) {
+        if (!mShiftTimeSlice.isActive()) {
             retval = false;
         }
 
         // Can't end if we're on break
-        else if (mBreakTime.isActive()) {
+        else if (mBreakTimeSlice.isActive()) {
             retval = false;
         }
 
         // Can't end if we're at lunch
-        else if (mLunchTime.isActive()) {
+        else if (mLunchTimeSlice.isActive()) {
             retval = false;
         }
         return retval;
     }
 
     public void startShift() throws IllegalStateException {
-        mTotalTime.start();
+        mShiftTimeSlice.start();
     }
 
     public void endShift() throws IllegalStateException {
-        mTotalTime.end();
+        mShiftTimeSlice.end();
     }
 
-    public long shiftSeconds() {
-        long retval = elapsedSeconds();
-        retval -= breakSeconds();
-        retval -= lunchSeconds();
-        return retval;
+    public TimeSlice shiftTimeSlice() {
+        return mShiftTimeSlice;
     }
 
     public boolean canStartBreak() {
         boolean retval = true;
 
         // Can't start lunch if we're not active
-        if (!mTotalTime.isActive()) {
+        if (!mShiftTimeSlice.isActive()) {
             retval = false;
         }
 
         // Can't break if we've already on broke,
-        else if (mBreakTime.isStarted()) {
+        else if (mBreakTimeSlice.isStarted()) {
             retval = false;
         }
 
         // Can't lunch again - not with *that* attitude... wait 'til i get my admin powers...
-        else if (mLunchTime.isActive()) {
+        else if (mLunchTimeSlice.isActive()) {
             retval = false;
         }
 
@@ -87,20 +91,24 @@ public class WorkShift {
 
     public boolean canEndBreak() {
 
-        boolean onBreak = mBreakTime.isActive();
+        boolean onBreak = mBreakTimeSlice.isActive();
         return onBreak;
     }
 
     public void startBreak() throws IllegalStateException {
-        mBreakTime.start();
+        mBreakTimeSlice.start();
     }
 
     public void endBreak() throws IllegalStateException {
-        mBreakTime.end();
+        mBreakTimeSlice.end();
+    }
+
+    public TimeSlice getBreakTimeSlice() {
+        return mBreakTimeSlice;
     }
 
     public long breakSeconds() {
-        long retval = mBreakTime.elapsedSeconds();
+        long retval = mBreakTimeSlice.elapsedSeconds();
         return retval;
     }
 
@@ -108,17 +116,17 @@ public class WorkShift {
         boolean retval = true;
 
         // Can't start lunch if we're not active
-        if (!mTotalTime.isActive()) {
+        if (!mShiftTimeSlice.isActive()) {
             retval = false;
         }
 
         // Can't lunch if we're on break
-        else if (mBreakTime.isActive()) {
+        else if (mBreakTimeSlice.isActive()) {
             retval = false;
         }
 
         // Can't lunch again - not with *that* attitude... wait 'til i get my admin powers...
-        else if (mLunchTime.isStarted()) {
+        else if (mLunchTimeSlice.isStarted()) {
             retval = false;
         }
 
@@ -126,20 +134,20 @@ public class WorkShift {
     }
 
     public boolean canEndLunch() {
-        boolean outToLunch = mLunchTime.isActive();
+        boolean outToLunch = mLunchTimeSlice.isActive();
         return outToLunch;
     }
 
     public void startLunch() throws IllegalStateException {
-        mLunchTime.start();
+        mLunchTimeSlice.start();
     }
 
     public void endLunch() throws IllegalStateException {
-        mLunchTime.end();
+        mLunchTimeSlice.end();
     }
 
     public long lunchSeconds() {
-        long retval = mLunchTime.elapsedSeconds();
+        long retval = mLunchTimeSlice.elapsedSeconds();
         return retval;
     }
 }

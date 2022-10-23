@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.gregsprogrammingworks.timeclock.model.Employee;
-import com.gregsprogrammingworks.timeclock.model.EmployeeStore;
+import com.gregsprogrammingworks.timeclock.store.EmployeeStore;
 
 import java.util.List;
 

@@ -4,27 +4,19 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.gregsprogrammingworks.timeclock.model.WorkShift;
-
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import com.gregsprogrammingworks.timeclock.store.WorkShiftStore;
 
 /// @// TODO: 10/22/22 use xml & notations to wire this auto-magically, as it should be
 /// @// TODO: 10/22/22 also, use live data objects more judiciously. Much more judiciously.
  public class WorkShiftViewModel extends ViewModel {
 
-     private Dictionary<String,MutableLiveData<WorkShift>> mActiveWorkshifts = new Hashtable<>();
+     // Cache the work shift store
+     private WorkShiftStore mWorkShiftStore = WorkShiftStore.getInstance();
 
-     public MutableLiveData<WorkShift> activeWorkShiftFor(String employeeId) {
-
-         MutableLiveData<WorkShift> mutableLiveData = mActiveWorkshifts.get(employeeId);
-         if (null == mutableLiveData) {
-             WorkShift workShift = new WorkShift(employeeId);
-             mutableLiveData = new MutableLiveData<>(workShift);
-             mActiveWorkshifts.put(employeeId, mutableLiveData);
-             maybeStartThread();
-         }
-         return mutableLiveData;
+     public MutableLiveData<WorkShift> openWorkShiftFor(String employeeId) {
+         MutableLiveData<WorkShift> retval = mWorkShiftStore.openWorkShiftFor(employeeId);
+         maybeStartThread();
+         return retval;
      }
 
      Thread mTimerThread = null;
@@ -38,15 +30,10 @@ import java.util.Hashtable;
              @Override
              public void run() {
                  boolean done = false;
-                 while (!done && !mActiveWorkshifts.isEmpty()) {
-                    Enumeration<MutableLiveData<WorkShift>> keyEnum = mActiveWorkshifts.elements();
-                    while (keyEnum.hasMoreElements()) {
-                        MutableLiveData<WorkShift> liveData = keyEnum.nextElement();
-                        if (liveData.hasActiveObservers()) {
-                            liveData.notifyAll();
-                        }
-                    }
+                 while (!done && 0 < mWorkShiftStore.getOpenWorkShiftCount()) {
+
                     try {
+                        mWorkShiftStore.signalOpenWorkShifts();
                         Thread.sleep(500);
                     }
                     catch (InterruptedException ex) {
