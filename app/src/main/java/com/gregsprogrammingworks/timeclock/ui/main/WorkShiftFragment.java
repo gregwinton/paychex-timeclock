@@ -28,7 +28,7 @@ public class WorkShiftFragment extends Fragment {
 
     private final String mEmployeeId;
 
-    private WorkShiftViewModel mViewModel;
+    private WorkShiftViewModel mWorkShiftViewModel;
     private MutableLiveData<WorkShift> mWorkShiftLiveData;
 
     private ButtonAssistant mShiftButtonAsst;
@@ -40,12 +40,20 @@ public class WorkShiftFragment extends Fragment {
         return new WorkShiftFragment(employeeId);
     }
 
+    public static WorkShiftFragment newInstance(WorkShift shift) {
+        return new WorkShiftFragment(shift);
+    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(WorkShiftViewModel.class);
-        mWorkShiftLiveData = mViewModel.openWorkShiftFor(mEmployeeId);
-        mWorkShiftLiveData.observe(this, mWorkShiftObserver);
+        mWorkShiftViewModel = new ViewModelProvider(this).get(WorkShiftViewModel.class);
+        if (null == mWorkShiftLiveData) {
+            mWorkShiftLiveData = mWorkShiftViewModel.openWorkShiftFor(mEmployeeId);
+            mWorkShiftLiveData.observe(this, mWorkShiftObserver);
+        }
+        else {
+            // WorkShift passed to constructor - therefore already complete.
+        }
     }
 
     @Override
@@ -68,6 +76,11 @@ public class WorkShiftFragment extends Fragment {
         mEmployeeId = employeeId;
     }
 
+    private WorkShiftFragment(WorkShift workShift) {
+        mEmployeeId = workShift.getEmployeeId();
+        mWorkShiftLiveData = new MutableLiveData<>(workShift);
+    }
+
     private View.OnClickListener mShiftButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -79,6 +92,7 @@ public class WorkShiftFragment extends Fragment {
             else if (workShift.canEndShift()) {
                 workShift.endShift();
                 mWorkShiftLiveData.postValue(workShift);
+                mWorkShiftViewModel.addWorkShift(workShift);
             }
         }
     };

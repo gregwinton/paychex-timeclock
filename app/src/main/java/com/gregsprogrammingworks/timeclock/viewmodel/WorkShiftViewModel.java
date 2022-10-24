@@ -25,6 +25,10 @@ import java.util.List;
          return retval;
      }
 
+     public void addWorkShift(WorkShift workShift) {
+         mWorkShiftStore.addWorkShift(workShift);
+     }
+
      public WorkShiftViewModel() {
          WorkShiftTimer.maybeStartThread();
      }

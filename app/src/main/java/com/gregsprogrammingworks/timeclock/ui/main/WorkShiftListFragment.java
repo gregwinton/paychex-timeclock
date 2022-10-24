@@ -5,7 +5,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,8 +19,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.gregsprogrammingworks.timeclock.R;
-import com.gregsprogrammingworks.timeclock.model.Employee;
 import com.gregsprogrammingworks.timeclock.model.WorkShift;
 import com.gregsprogrammingworks.timeclock.viewmodel.EmployeeViewModel;
 import com.gregsprogrammingworks.timeclock.viewmodel.WorkShiftViewModel;
@@ -30,19 +29,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class EmployeeDetailFragment extends Fragment {
+public class WorkShiftListFragment extends Fragment {
 
-    private static final String TAG = EmployeeDetailFragment.class.getSimpleName();
+    private static final String TAG = WorkShiftListFragment.class.getSimpleName();
 
     private final String mEmployeeId;
 
     private WorkShiftViewModel mShiftViewModel;
     private EmployeeViewModel mEmployeeViewModel;
     private MutableLiveData<List<WorkShift>> mShiftListData;
-    private ListView mShiftListView;
 
-    public static EmployeeDetailFragment newInstance(String employeeId) {
-        return new EmployeeDetailFragment(employeeId);
+    private ListView mShiftListView;
+    private FloatingActionButton mAddShiftButton;
+
+    public static WorkShiftListFragment newInstance(String employeeId) {
+        return new WorkShiftListFragment(employeeId);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class EmployeeDetailFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_employee_detail, container, false);
+        View view = inflater.inflate(R.layout.fragment_work_shift_list, container, false);
         setupViews(view);
         return view;
     }
@@ -76,30 +77,42 @@ public class EmployeeDetailFragment extends Fragment {
         mShiftListView.setAdapter(employeeListAdapter);
 
         // Set the employee list view's item click listener
-        AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
+        AdapterView.OnItemClickListener shiftListViewOnItemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // Cache the context. It just makes the code nicer
-                Context ctx = EmployeeDetailFragment.this.getContext();
-
                 // Get the employee that was clicked on
                 WorkShift workShift = mShiftListData.getValue().get(position);
 
                 // TODO show their timesheet or shift card
-                Fragment workShiftFragment = WorkShiftFragment.newInstance(workShift.getEmployeeId());
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.container, workShiftFragment, "workShift");
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+                Fragment fragment = WorkShiftFragment.newInstance(workShift);
+                gotoShiftFragment(fragment);
             }
         };
-        mShiftListView.setOnItemClickListener(onItemClickListener);
+        mShiftListView.setOnItemClickListener(shiftListViewOnItemClickListener);
+
+        View.OnClickListener addButtonOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment = WorkShiftFragment.newInstance(mEmployeeId);
+                gotoShiftFragment(fragment);
+            }
+        };
+        mAddShiftButton = view.findViewById(R.id.WorkShiftAddButton);
+        mAddShiftButton.setOnClickListener(addButtonOnClickListener);
     }
 
-    private EmployeeDetailFragment(String employeeId) {
+    private void gotoShiftFragment(Fragment workShiftFragment) {
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.container, workShiftFragment, "workShift");
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    private WorkShiftListFragment(String employeeId) {
         mEmployeeId = employeeId;
     }
+
     /**
      * Create a list adapter proxy to shift list live data
      * @return  list adapter
@@ -117,14 +130,14 @@ public class EmployeeDetailFragment extends Fragment {
 
         // Traverse the shift list, add entry "${name} (${id})" to  the shift rows array
         for (WorkShift shift : shiftList) {
-            Date startDate = shift.shiftTimeSlice().getStart();
+            Date startDate = shift.getShiftTimeSlice().getStart();
             String shiftRow = startDate.toString();
             adapterList.add(shiftRow);
         }
 
         // Instantiate a simple list array adapter
         ArrayAdapter<String> shiftListAdapter = new ArrayAdapter<String>(
-                EmployeeDetailFragment.this.getContext(),
+                WorkShiftListFragment.this.getContext(),
                 android.R.layout.simple_list_item_1,
                 adapterList);
 

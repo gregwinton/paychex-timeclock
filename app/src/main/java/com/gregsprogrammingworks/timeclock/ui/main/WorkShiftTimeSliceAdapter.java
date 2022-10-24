@@ -56,7 +56,7 @@ public class WorkShiftTimeSliceAdapter extends ArrayAdapter<WorkShiftTimeSliceDa
     public void refresh() {
         clear();
         WorkShift workShift = mWorkShiftLiveData.getValue();
-        maybeAddSlice("Shift", workShift.shiftTimeSlice());
+        maybeAddSlice("Shift", workShift.getShiftTimeSlice());
         maybeAddSlice("Break", workShift.getBreakTimeSlice());
         maybeAddSlice("Lunch", workShift.getLunchTimeSlice());
     }

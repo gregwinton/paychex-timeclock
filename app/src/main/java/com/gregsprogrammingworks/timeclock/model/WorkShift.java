@@ -1,10 +1,15 @@
 package com.gregsprogrammingworks.timeclock.model;
 
 import com.gregsprogrammingworks.common.TimeSlice;
+import com.gregsprogrammingworks.timeclock.store.WorkShiftStore;
+
+import java.util.UUID;
 
 public class WorkShift {
 
     private static final String TAG = WorkShift.class.getSimpleName();
+
+    private final UUID mShiftId;
 
     private final String mEmployeeId;
 
@@ -13,16 +18,19 @@ public class WorkShift {
     private final TimeSlice mLunchTimeSlice;
 
     public WorkShift(String employeeId) {
+        mShiftId = UUID.randomUUID();
         mEmployeeId = employeeId;
         mShiftTimeSlice = new TimeSlice();
         mBreakTimeSlice = new TimeSlice();
         mLunchTimeSlice = new TimeSlice();
     }
 
-    public WorkShift(String employeeId,
+    public WorkShift(UUID shiftId,
+                     String employeeId,
                      TimeSlice shiftSlice,
                      TimeSlice breakSlice,
                      TimeSlice lunchSlice) {
+        mShiftId = shiftId;
         mEmployeeId = employeeId;
         mShiftTimeSlice = shiftSlice;
         mBreakTimeSlice = breakSlice;
@@ -78,7 +86,7 @@ public class WorkShift {
         mShiftTimeSlice.end();
     }
 
-    public TimeSlice shiftTimeSlice() {
+    public TimeSlice getShiftTimeSlice() {
         return mShiftTimeSlice;
     }
 

@@ -11,6 +11,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.UUID;
 
 public class WorkShiftStore {
 
@@ -40,12 +41,13 @@ public class WorkShiftStore {
         }
     }
 
-    public void saveWorkShift(WorkShift workShift) {
+    public void addWorkShift(WorkShift workShift) {
         String employeeId = workShift.getEmployeeId();
         MutableLiveData<List<WorkShift>> liveData = shiftListLiveDataFor(employeeId);
         List<WorkShift> shiftList = liveData.getValue();
         shiftList.add(workShift);
         liveData.postValue(shiftList);
+        mOpenWorkShifts.remove(workShift.getEmployeeId());
     }
 
     public MutableLiveData<WorkShift> openWorkShiftFor(String employeeId) {
@@ -75,11 +77,11 @@ public class WorkShiftStore {
     private MutableLiveData<List<WorkShift>> requestWorkShifts(String employeeId) {
 
         List<WorkShift> worksheets = new ArrayList<>();
-        maybeAddWorkShift(worksheets, employeeId, 5, 30, 45);
-        maybeAddWorkShift(worksheets, employeeId, 4, 0, 60);
-        maybeAddWorkShift(worksheets, employeeId, 3, 45, 0);
-        maybeAddWorkShift(worksheets, employeeId, 2, 40, 60);
-        maybeAddWorkShift(worksheets, employeeId, 1, 20, 90);
+//        maybeAddWorkShift(worksheets, employeeId, 5, 30, 45);
+//        maybeAddWorkShift(worksheets, employeeId, 4, 0, 60);
+//        maybeAddWorkShift(worksheets, employeeId, 3, 45, 0);
+//        maybeAddWorkShift(worksheets, employeeId, 2, 40, 60);
+//        maybeAddWorkShift(worksheets, employeeId, 1, 20, 90);
 
         final MutableLiveData<List<WorkShift>> worksheetsData = new MutableLiveData<>(worksheets);
         return worksheetsData;
@@ -132,8 +134,8 @@ public class WorkShiftStore {
         millis += 2 * 60/*minutes*/ * 60/*seconds*/ * 1000/*millis*/;
         final Date shiftEnd = new Date(millis);
         shiftSlice = new TimeSlice(shiftStart, shiftEnd);
-
-        final WorkShift workShift = new WorkShift(employeeId, shiftSlice, breakSlice, lunchSlice);
+        final UUID uuid = UUID.randomUUID();
+        final WorkShift workShift = new WorkShift(uuid, employeeId, shiftSlice, breakSlice, lunchSlice);
         workShiftList.add(workShift);
     }
 }

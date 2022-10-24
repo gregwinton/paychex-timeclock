@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">TimeClock</string>
     <string name="heading">Sample Time Clock App for PayChex</string>
+    <string name="add_button_desc">Add a value</string>
 </resources>

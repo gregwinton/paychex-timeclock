@@ -88,10 +88,10 @@ public class EmployeeListFragment extends Fragment {
                 Employee employee = mEmployeeListLiveData.getValue().get(position);
 
                 // TODO show their timesheet or shift card
-                Fragment employeeFragment = EmployeeDetailFragment.newInstance(employee.getId());
+                Fragment employeeFragment = WorkShiftListFragment.newInstance(employee.getId());
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.container, employeeFragment, "employeeDetail");
+                fragmentTransaction.replace(R.id.container, employeeFragment, "workShiftList");
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
