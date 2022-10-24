@@ -16,8 +16,6 @@ public class EmployeeStore {
     public MutableLiveData<List<Employee>> requestEmployees() {
 
         List<Employee> employees = new ArrayList<Employee>();
-        maybeAddEmployee(employees, "ABC1234", "    ");
-        maybeAddEmployee(employees, "DEF 678", "Banana");
         maybeAddEmployee(employees, "WINT00007", "Greg Winton");
         maybeAddEmployee(employees, "QUIN00003", "Alejandro Quintana");
         maybeAddEmployee(employees, "PANZ00004", "Sancho Panzes");

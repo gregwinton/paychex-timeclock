@@ -6,17 +6,31 @@ public class WorkShift {
 
     private static final String TAG = WorkShift.class.getSimpleName();
 
-    private final String mId;
+    private final String mEmployeeId;
 
     private final TimeSlice mShiftTimeSlice;
     private final TimeSlice mBreakTimeSlice;
     private final TimeSlice mLunchTimeSlice;
 
-    public WorkShift(String id) {
-        mId = id;
+    public WorkShift(String employeeId) {
+        mEmployeeId = employeeId;
         mShiftTimeSlice = new TimeSlice();
         mBreakTimeSlice = new TimeSlice();
         mLunchTimeSlice = new TimeSlice();
+    }
+
+    public WorkShift(String employeeId,
+                     TimeSlice shiftSlice,
+                     TimeSlice breakSlice,
+                     TimeSlice lunchSlice) {
+        mEmployeeId = employeeId;
+        mShiftTimeSlice = shiftSlice;
+        mBreakTimeSlice = breakSlice;
+        mLunchTimeSlice = lunchSlice;
+    }
+
+    public String getEmployeeId() {
+        return mEmployeeId;
     }
 
     public long onTheClockSeconds() {

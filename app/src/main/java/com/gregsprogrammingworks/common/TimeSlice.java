@@ -11,11 +11,16 @@ public class TimeSlice {
     Date mStartDate = kNilDate;
     Date mEndDate = kNilDate;
 
-    public static boolean isNilDate(Date date) {
-        return kNilDate.equals(date);
-    }
+    public static Date nilDate() { return kNilDate; }
+
+    public static boolean isNilDate(Date date) { return kNilDate.equals(date); }
 
     public TimeSlice() {
+    }
+
+    public TimeSlice(Date startDate, Date endDate) {
+        mStartDate = startDate;
+        mEndDate = endDate;
     }
 
     protected TimeSlice(TimeSlice that) {

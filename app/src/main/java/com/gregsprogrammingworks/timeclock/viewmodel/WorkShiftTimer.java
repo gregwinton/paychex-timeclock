@@ -26,11 +26,10 @@ public class WorkShiftTimer {
             @Override
             public void run() {
                 boolean done = false;
-//                while (!done && 0 < mWorkShiftStore.getOpenWorkShiftCount()) {
                 while (!done) {
                     try {
                         mWorkShiftStore.signalOpenWorkShifts();
-                        Thread.sleep(500);
+                        Thread.sleep(1000);
                     }
                     catch (InterruptedException ex) {
                         done = true;

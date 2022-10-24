@@ -22,44 +22,42 @@ import android.widget.ListView;
 
 import com.gregsprogrammingworks.timeclock.R;
 import com.gregsprogrammingworks.timeclock.model.Employee;
+import com.gregsprogrammingworks.timeclock.model.WorkShift;
 import com.gregsprogrammingworks.timeclock.viewmodel.EmployeeViewModel;
+import com.gregsprogrammingworks.timeclock.viewmodel.WorkShiftViewModel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class EmployeeListFragment extends Fragment {
+public class EmployeeDetailFragment extends Fragment {
 
-    private static final String TAG = EmployeeListFragment.class.getSimpleName();
+    private static final String TAG = EmployeeDetailFragment.class.getSimpleName();
 
+    private final String mEmployeeId;
+
+    private WorkShiftViewModel mShiftViewModel;
     private EmployeeViewModel mEmployeeViewModel;
-    private MutableLiveData<List<Employee>> mEmployeeListLiveData;
-    private ListView mEmployeeListView;
+    private MutableLiveData<List<WorkShift>> mShiftListData;
+    private ListView mShiftListView;
 
-    public static EmployeeListFragment newInstance() {
-        return new EmployeeListFragment();
+    public static EmployeeDetailFragment newInstance(String employeeId) {
+        return new EmployeeDetailFragment(employeeId);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Cache some data
+        mShiftViewModel = new ViewModelProvider(this).get(WorkShiftViewModel.class);
+        mShiftListData = mShiftViewModel.workShiftsFor(mEmployeeId);
         mEmployeeViewModel = new ViewModelProvider(this).get(EmployeeViewModel.class);
-        mEmployeeListLiveData = mEmployeeViewModel.getEmployees();
     }
 
-    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
-        // Inflate the resource into a view
-        View view = inflater.inflate(R.layout.fragment_employee_list, container, false);
-
-        // Initialize our bits
+        View view = inflater.inflate(R.layout.fragment_employee_detail, container, false);
         setupViews(view);
-
-        // Return result
         return view;
     }
 
@@ -71,68 +69,66 @@ public class EmployeeListFragment extends Fragment {
     void setupViews(View view) {
 
         // Find the employee list view
-        mEmployeeListView = view.findViewById(R.id.employeeListView);
+        mShiftListView = view.findViewById(R.id.WorkShiftListView);
 
         // Set the employee list view's adapter from the live data
-        ListAdapter employeeListAdapter = makeEmployeeListAdapter();
-        mEmployeeListView.setAdapter(employeeListAdapter);
+        ListAdapter employeeListAdapter = makeWorkShiftListAdapter();
+        mShiftListView.setAdapter(employeeListAdapter);
 
         // Set the employee list view's item click listener
         AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // Cache the context. It just makes the code nicer
-                Context ctx = EmployeeListFragment.this.getContext();
+                Context ctx = EmployeeDetailFragment.this.getContext();
 
                 // Get the employee that was clicked on
-                Employee employee = mEmployeeListLiveData.getValue().get(position);
+                WorkShift workShift = mShiftListData.getValue().get(position);
 
                 // TODO show their timesheet or shift card
-                Fragment employeeFragment = EmployeeDetailFragment.newInstance(employee.getId());
+                Fragment workShiftFragment = WorkShiftFragment.newInstance(workShift.getEmployeeId());
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.container, employeeFragment, "employeeDetail");
+                fragmentTransaction.replace(R.id.container, workShiftFragment, "workShift");
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
         };
-        mEmployeeListView.setOnItemClickListener(onItemClickListener);
+        mShiftListView.setOnItemClickListener(onItemClickListener);
     }
 
+    private EmployeeDetailFragment(String employeeId) {
+        mEmployeeId = employeeId;
+    }
     /**
-     * Create a list adapter proxy to employee list live data
+     * Create a list adapter proxy to shift list live data
      * @return  list adapter
-     * @// TODO: 10/22/22 Ponder moving this to ViewModel/Res
+     * @// TODO: 10/23/22 Ponder moving this to ViewModel/Res
      */
-    ListAdapter makeEmployeeListAdapter() {
+    private ListAdapter makeWorkShiftListAdapter() {
 
-        // TODO: Add sort options - by name, by id, by total?
+        // TODO: Add sort options - by id, by date, by total?
 
-        /* NB:  This may well be a case of premature optimization - i'm not sure how clever Java
-         *      compiler optimizers are these days - but I hate repeating the same function call
-         *      in a loop unless I know *for sure* it will be inlined (as in C++). That said, i
-         *      haven't followed the latest news on java compilers, i just expect them to do their
-         *      best. (gregw, 2022.10.22)
-         */
-        // Get the list of employees from the live data.
-        List<Employee> employeeList = mEmployeeListLiveData.getValue();
+        // Get the list of shifts from the live data.
+        List<WorkShift> shiftList = mShiftListData.getValue();
 
-        // Create an empty array that will be filled with employees and passed to the adapter
+        // Create an empty array that will be filled with shifts and passed to the adapter
         List<String> adapterList = new ArrayList<>();
 
-        // Traverse the employee list, add entry "${name} (${id})" to  the employee rows array
-        for (Employee employee : employeeList) {
-            String employeeRow = employee.getName() + " (" + employee.getId() + ")";
-            adapterList.add(employeeRow);
+        // Traverse the shift list, add entry "${name} (${id})" to  the shift rows array
+        for (WorkShift shift : shiftList) {
+            Date startDate = shift.shiftTimeSlice().getStart();
+            String shiftRow = startDate.toString();
+            adapterList.add(shiftRow);
         }
 
         // Instantiate a simple list array adapter
-        ArrayAdapter<String> employeeListAdapter = new ArrayAdapter<String>(
-                EmployeeListFragment.this.getContext(),
+        ArrayAdapter<String> shiftListAdapter = new ArrayAdapter<String>(
+                EmployeeDetailFragment.this.getContext(),
                 android.R.layout.simple_list_item_1,
                 adapterList);
 
         // Return result
-        return employeeListAdapter;
+        return shiftListAdapter;
     }
 }
