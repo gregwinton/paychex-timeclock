@@ -62,9 +62,10 @@ public class EmployeeStore {
         // Create a canned list of employees
         // TODO: when we have persistence, gut this, and retrieve from storage
         List<Employee> employees = new ArrayList<Employee>();
-        maybeAddEmployee(employees, "WINT00007", "Greg Winton");
-        maybeAddEmployee(employees, "QUIN00003", "Alejandro Quintana");
+        maybeAddEmployee(employees, "BENE12345", "Cide H Benengeli");
         maybeAddEmployee(employees, "PANZ00004", "Sancho Panzes");
+        maybeAddEmployee(employees, "QUIJ00003", "Alonso Quijano");
+        maybeAddEmployee(employees, "TOBO00007", "Dulcinea del Toboso");
 
         // Create a mutable live data around the list and return.
         // TODO: Ponder wither the MutableLiveData is necessary.
