@@ -6,14 +6,8 @@ public class TimeSlice {
 
     private static final String TAG = TimeSlice.class.getSimpleName();
 
-    private static final Date kNilDate = new Date(0);
-
-    Date mStartDate = kNilDate;
-    Date mEndDate = kNilDate;
-
-    public static Date nilDate() { return kNilDate; }
-
-    public static boolean isNilDate(Date date) { return kNilDate.equals(date); }
+    Date mStartDate = TimeHelper.nilDate();
+    Date mEndDate = TimeHelper.nilDate();
 
     public TimeSlice() {
     }
@@ -32,7 +26,7 @@ public class TimeSlice {
         long elapsedSeconds = 0;
         if (isStarted())
         {
-            Date endDate = ! kNilDate.equals(mEndDate) ? mEndDate : new Date();
+            Date endDate = ! TimeHelper.isNilDate(mEndDate) ? mEndDate : new Date();
             long startMillis = mStartDate.getTime();
             long endMillis = endDate.getTime();
             long elapsedMillis = endMillis - startMillis;
@@ -53,13 +47,13 @@ public class TimeSlice {
 
     public boolean isStarted() {
         Date start = getStart();
-        boolean isStarted = !isNilDate(start);
+        boolean isStarted = !TimeHelper.isNilDate(start);
         return isStarted;
     }
 
     public boolean isComplete() {
         Date end = getEnd();
-        boolean isEnded = !isNilDate(end);
+        boolean isEnded = !TimeHelper.isNilDate(end);
         return isEnded;
     }
 
