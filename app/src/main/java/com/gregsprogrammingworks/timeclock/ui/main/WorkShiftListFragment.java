@@ -3,17 +3,21 @@ package com.gregsprogrammingworks.timeclock.ui.main;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
@@ -21,6 +25,7 @@ import android.widget.ListView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.gregsprogrammingworks.timeclock.R;
+import com.gregsprogrammingworks.timeclock.model.Employee;
 import com.gregsprogrammingworks.timeclock.model.WorkShift;
 import com.gregsprogrammingworks.timeclock.viewmodel.EmployeeViewModel;
 import com.gregsprogrammingworks.timeclock.viewmodel.WorkShiftViewModel;
@@ -51,6 +56,7 @@ public class WorkShiftListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mShiftViewModel = new ViewModelProvider(this).get(WorkShiftViewModel.class);
         mShiftListData = mShiftViewModel.workShiftsFor(mEmployeeId);
+
         mEmployeeViewModel = new ViewModelProvider(this).get(EmployeeViewModel.class);
     }
 
@@ -73,8 +79,8 @@ public class WorkShiftListFragment extends Fragment {
         mShiftListView = view.findViewById(R.id.WorkShiftListView);
 
         // Set the employee list view's adapter from the live data
-        ListAdapter employeeListAdapter = makeWorkShiftListAdapter();
-        mShiftListView.setAdapter(employeeListAdapter);
+        ListAdapter listAdapter = makeWorkShiftListAdapter();
+        mShiftListView.setAdapter(listAdapter);
 
         // Set the employee list view's item click listener
         AdapterView.OnItemClickListener shiftListViewOnItemClickListener = new AdapterView.OnItemClickListener() {
@@ -120,28 +126,10 @@ public class WorkShiftListFragment extends Fragment {
      */
     private ListAdapter makeWorkShiftListAdapter() {
 
-        // TODO: Add sort options - by id, by date, by total?
-
-        // Get the list of shifts from the live data.
-        List<WorkShift> shiftList = mShiftListData.getValue();
-
-        // Create an empty array that will be filled with shifts and passed to the adapter
-        List<String> adapterList = new ArrayList<>();
-
-        // Traverse the shift list, add entry "${name} (${id})" to  the shift rows array
-        for (WorkShift shift : shiftList) {
-            Date startDate = shift.getShiftTimeSlice().getStart();
-            String shiftRow = startDate.toString();
-            adapterList.add(shiftRow);
-        }
-
         // Instantiate a simple list array adapter
-        ArrayAdapter<String> shiftListAdapter = new ArrayAdapter<String>(
-                WorkShiftListFragment.this.getContext(),
-                android.R.layout.simple_list_item_1,
-                adapterList);
+        Context ctx = getContext();
+        ListAdapter adapter = new WorkShiftListAdapter(mEmployeeId, ctx);
 
-        // Return result
-        return shiftListAdapter;
+        return adapter;
     }
 }

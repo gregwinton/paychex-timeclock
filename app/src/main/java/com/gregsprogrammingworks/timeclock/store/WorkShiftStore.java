@@ -1,5 +1,7 @@
 package com.gregsprogrammingworks.timeclock.store;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 
 import com.gregsprogrammingworks.common.TimeSlice;
@@ -14,6 +16,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class WorkShiftStore {
+
+    private static final String TAG = WorkShiftStore.class.getSimpleName();
 
     private Dictionary<String,MutableLiveData<WorkShift>> mOpenWorkShifts = new Hashtable<>();
     private Dictionary<String,MutableLiveData<List<WorkShift>>> mWorkShiftsByEmployee = new Hashtable<>();
@@ -76,15 +80,18 @@ public class WorkShiftStore {
 
     private MutableLiveData<List<WorkShift>> requestWorkShifts(String employeeId) {
 
-        List<WorkShift> worksheets = new ArrayList<>();
-//        maybeAddWorkShift(worksheets, employeeId, 5, 30, 45);
-//        maybeAddWorkShift(worksheets, employeeId, 4, 0, 60);
-//        maybeAddWorkShift(worksheets, employeeId, 3, 45, 0);
-//        maybeAddWorkShift(worksheets, employeeId, 2, 40, 60);
-//        maybeAddWorkShift(worksheets, employeeId, 1, 20, 90);
+        List<WorkShift> worksheetList = new ArrayList<>();
 
-        final MutableLiveData<List<WorkShift>> worksheetsData = new MutableLiveData<>(worksheets);
-        return worksheetsData;
+//        maybeAddWorkShift(worksheetList, employeeId, 5, 30, 45);
+//        maybeAddWorkShift(worksheetList, employeeId, 4, 0, 60);
+//        maybeAddWorkShift(worksheetList, employeeId, 3, 45, 0);
+//        maybeAddWorkShift(worksheetList, employeeId, 2, 40, 60);
+//        maybeAddWorkShift(worksheetList, employeeId, 1, 20, 90);
+
+        final MutableLiveData<List<WorkShift>>
+                worksheetListData = new MutableLiveData<>(worksheetList);
+
+        return worksheetListData;
     }
 
     private void maybeAddWorkShift(List<WorkShift> workShiftList,

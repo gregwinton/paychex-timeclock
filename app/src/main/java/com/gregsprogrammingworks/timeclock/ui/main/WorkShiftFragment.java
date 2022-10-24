@@ -31,6 +31,7 @@ public class WorkShiftFragment extends Fragment {
     private WorkShiftViewModel mWorkShiftViewModel;
     private MutableLiveData<WorkShift> mWorkShiftLiveData;
 
+    private View mShiftButtonsView;
     private ButtonAssistant mShiftButtonAsst;
     private ButtonAssistant mBreakButtonAsst;
     private ButtonAssistant mLunchButtonAsst;
@@ -61,6 +62,7 @@ public class WorkShiftFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_work_shift, container, false);
 
+        mShiftButtonsView = view.findViewById(R.id.WorkShiftButtonsView);
         mShiftButtonAsst = new ButtonAssistant(view, R.id.ShiftButton, mShiftButtonClickListener);
         mBreakButtonAsst = new ButtonAssistant(view, R.id.BreakButton, mBreakButtonClickListener);
         mLunchButtonAsst = new ButtonAssistant(view, R.id.LunchButton, mLunchButtonClickListener);
@@ -69,6 +71,8 @@ public class WorkShiftFragment extends Fragment {
         WorkShiftTimeSliceAdapter adapter = new WorkShiftTimeSliceAdapter(mWorkShiftLiveData, getContext());
         mTimeSliceListView.setAdapter(adapter);
 
+        WorkShift workShift = mWorkShiftLiveData.getValue();
+        refresh(workShift);
         return view;
     }
 
@@ -131,61 +135,79 @@ public class WorkShiftFragment extends Fragment {
 
         @Override
         public void onChanged(WorkShift workShift) {
-            maybeUpdateShiftButton(workShift);
-            maybeUpdateBreakButton(workShift);
-            maybeUpdateLunchButton(workShift);
-            maybeUpdateTimeSliceListView();
-        }
-
-        private void maybeUpdateShiftButton(WorkShift workShift) {
-            boolean enable = false;
-            String label = "Shift";    // todo: move to strings.xml
-            if (workShift.canStartShift()) {
-                enable = true;
-                label = "Start Shift"; // todo: move to strings.xml
-            }
-            else if (workShift.canEndShift()) {
-                enable = true;
-                label = "End Shift";   // todo: move to strings.xml
-            }
-            mShiftButtonAsst.maybeUpdate(label, enable);
-        }
-
-        private void maybeUpdateBreakButton(WorkShift workShift) {
-            boolean enable = false;
-            String label = "Break";            // todo: move to strings.xml
-            if (workShift.canStartBreak()) {
-                enable = true;
-                label = "Start Break"; // todo: move to strings.xml
-            }
-            else if (workShift.canEndBreak()) {
-                enable = true;
-                label = "End Break";   // todo: move to strings.xml
-            }
-            mBreakButtonAsst.maybeUpdate(label, enable);
-        }
-
-        private void maybeUpdateLunchButton(WorkShift workShift) {
-            boolean enable = false;
-            String label = "Lunch";    // todo: move to strings.xml
-            if (workShift.canStartLunch()) {
-                enable = true;
-                label = "Start Lunch"; // todo: move to strings.xml
-            }
-            else if (workShift.canEndLunch()) {
-                enable = true;
-                label = "End Lunch";   // todo: move to strings.xml
-            }
-            mLunchButtonAsst.maybeUpdate(label, enable);
-        }
-
-        private void maybeUpdateTimeSliceListView() {
-            WorkShiftTimeSliceAdapter adapter =
-                    (WorkShiftTimeSliceAdapter) mTimeSliceListView.getAdapter();
-
-            adapter.refresh();
+            refresh(workShift);
         }
     };
+
+    private void refresh(WorkShift workShift) {
+        maybeUpdateShiftButton(workShift);
+        maybeUpdateBreakButton(workShift);
+        maybeUpdateLunchButton(workShift);
+        maybeUpdateTimeSliceListView();
+    }
+
+    private void maybeUpdateShiftButton(WorkShift workShift) {
+        boolean enable = false;
+        String label = "Shift";    // todo: move to strings.xml
+        if (workShift.canStartShift()) {
+            enable = true;
+            label = "Start Shift"; // todo: move to strings.xml
+        }
+        else if (workShift.canEndShift()) {
+            enable = true;
+            label = "End Shift";   // todo: move to strings.xml
+        }
+        mShiftButtonAsst.maybeUpdate(label, enable);
+    }
+
+    private void maybeUpdateBreakButton(WorkShift workShift) {
+        boolean enable = false;
+        String label = "Break";            // todo: move to strings.xml
+        if (workShift.canStartBreak()) {
+            enable = true;
+            label = "Start Break"; // todo: move to strings.xml
+        }
+        else if (workShift.canEndBreak()) {
+            enable = true;
+            label = "End Break";   // todo: move to strings.xml
+        }
+        mBreakButtonAsst.maybeUpdate(label, enable);
+    }
+
+    private void maybeUpdateLunchButton(WorkShift workShift) {
+        boolean enable = false;
+        String label = "Lunch";    // todo: move to strings.xml
+        if (workShift.canStartLunch()) {
+            enable = true;
+            label = "Start Lunch"; // todo: move to strings.xml
+        }
+        else if (workShift.canEndLunch()) {
+            enable = true;
+            label = "End Lunch";   // todo: move to strings.xml
+        }
+        mLunchButtonAsst.maybeUpdate(label, enable);
+    }
+
+    void maybeHideButtons() {
+        int vis = View.GONE;
+        if (mShiftButtonAsst.isEnabled()) {
+            vis = View.VISIBLE;
+        }
+        else if (mBreakButtonAsst.isEnabled()) {
+            vis = View.VISIBLE;
+        }
+        else if (mLunchButtonAsst.isEnabled()) {
+            vis = View.VISIBLE;
+        }
+        mShiftButtonsView.setVisibility(vis);
+    }
+
+    private void maybeUpdateTimeSliceListView() {
+        WorkShiftTimeSliceAdapter adapter =
+                (WorkShiftTimeSliceAdapter) mTimeSliceListView.getAdapter();
+
+        adapter.refresh();
+    }
 
     private class ButtonAssistant {
         private final Button mButton;
@@ -195,6 +217,10 @@ public class WorkShiftFragment extends Fragment {
             mButton.setOnClickListener(onClickListener);
         }
 
+        public boolean isEnabled() {
+            boolean retval = mButton.isEnabled();
+            return retval;
+        }
         public void maybeUpdate(String label, boolean enable) {
             String btnLabel = mButton.toString();
             boolean btnEnabled = mButton.isEnabled();
@@ -212,6 +238,7 @@ public class WorkShiftFragment extends Fragment {
                 public void run() {
                     mButton.setEnabled(enable);
                     mButton.setText(label);
+                    maybeHideButtons();
                 }
             };
             mainHandler.post(myRunnable);
