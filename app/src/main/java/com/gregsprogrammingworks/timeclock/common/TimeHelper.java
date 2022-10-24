@@ -59,7 +59,7 @@ public class TimeHelper {
     public static String formatDateTime(Date date) {
 
         // Init return value - in case date is invalid
-        String retval = "--/-- --:--";   // TODO: Move to strings.xml
+        String retval = "-----";   // TODO: Move to strings.xml
 
         if (! isNilDate(date)) {
 

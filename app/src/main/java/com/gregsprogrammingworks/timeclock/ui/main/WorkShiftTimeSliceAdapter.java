@@ -90,7 +90,7 @@ public class WorkShiftTimeSliceAdapter extends ArrayAdapter<WorkShiftTimeSliceDa
             // No need for a new view
             rowView = convertView;
 
-            // View exists - get the row
+            // Get the row from the view
             row = (WorkShiftTimeSliceRow) rowView.getTag();
         }
 

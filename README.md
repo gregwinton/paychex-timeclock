@@ -31,15 +31,14 @@ As it is, the result still could use a bit of polish:
 ## Next Steps
 - persist data between sessions
     - ponder "saving" active shifts
-- clean up, comment, refactor
-    - optimize use of MutableLiveData<> objects. 
-        - not sure all are necessary.
 - add an application icon
 - change user selection from current full page list of users to a more traditional login window (albeit without password)
     - allow user to register
 - add support for admin users 
     - limit access user list screen to admin users <- user's will only see their own shift activity
 - add filtering to employee work shift list
+- optimize use of MutableLiveData<> objects. 
+    - not sure all are necessary.
 
 ## Known Issues
 - Employee WorkShift List elapsed time for shift does not stop or account for break, lunch.
