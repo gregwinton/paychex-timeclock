@@ -3,8 +3,8 @@ package com.gregsprogrammingworks.timeclock.ui.main;
 import android.view.View;
 import android.widget.TextView;
 
-import com.gregsprogrammingworks.common.TimeHelper;
-import com.gregsprogrammingworks.common.TimeSlice;
+import com.gregsprogrammingworks.timeclock.common.TimeHelper;
+import com.gregsprogrammingworks.timeclock.common.TimeSlice;
 import com.gregsprogrammingworks.timeclock.R;
 
 import java.util.Date;
@@ -24,8 +24,8 @@ public class WorkShiftTimeSliceRow {
 
     void setTimeSlice(String label, TimeSlice timeSlice) {
         setLabelText(label);
-        setStartDate(timeSlice.getStart());
-        setEndDate(timeSlice.getEnd());
+        setStartDate(timeSlice.getStartDate());
+        setEndDate(timeSlice.getEndDate());
         setElapsedSeconds(timeSlice.elapsedSeconds());
     }
 
@@ -45,17 +45,17 @@ public class WorkShiftTimeSliceRow {
         mElapsedText.setText(text);
     }
 
-    private void setStartDate(Date date) {
+    void setStartDate(Date date) {
         String dateStr = TimeHelper.formatDateTime(date);
         setStartText(dateStr);
     }
 
-    private void setEndDate(Date date) {
+    void setEndDate(Date date) {
         String dateStr = TimeHelper.formatDateTime(date);
         setEndText(dateStr);
     }
 
-    private void setElapsedSeconds(long elapsedSeconds) {
+    void setElapsedSeconds(long elapsedSeconds) {
         String elapsedStr = TimeHelper.formatElapsedSeconds(elapsedSeconds);
         setElapsedText(elapsedStr);
     }

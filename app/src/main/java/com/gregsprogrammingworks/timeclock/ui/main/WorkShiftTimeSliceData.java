@@ -1,6 +1,6 @@
 package com.gregsprogrammingworks.timeclock.ui.main;
 
-import com.gregsprogrammingworks.common.TimeSlice;
+import com.gregsprogrammingworks.timeclock.common.TimeSlice;
 
 public class WorkShiftTimeSliceData {
     private static final String TAG = WorkShiftTimeSliceData.class.getSimpleName();

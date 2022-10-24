@@ -1,10 +1,41 @@
+/*                                                      WorkShiftStore.java
+ *                                                                TimeClock
+ * ------------------------------------------------------------------------
+ *
+ * ABSTRACT:
+ * --------
+ *  Provides storage and retrieval for WorkShift data.
+ *  NB: Currently does not persist across sessions.
+ * ------------------------------------------------------------------------
+ *
+ * COPYRIGHT:
+ * ---------
+ *  Copyright (C) 2022 Greg Winton
+ * ------------------------------------------------------------------------
+ *
+ * LICENSE:
+ * -------
+ *  This program is free software: you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License as
+ *  published by the Free Software Foundation, either version 3 of
+ *  the License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ *  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.
+ *
+ *  If not, see http://www.gnu.org/licenses/.
+ * ------------------------------------------------------------------------ */
 package com.gregsprogrammingworks.timeclock.store;
-
-import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.gregsprogrammingworks.common.TimeSlice;
+import com.gregsprogrammingworks.timeclock.common.TimeSlice;
 import com.gregsprogrammingworks.timeclock.model.WorkShift;
 
 import java.util.ArrayList;
@@ -17,13 +48,20 @@ import java.util.UUID;
 
 public class WorkShiftStore {
 
+    /// Tag for logging
     private static final String TAG = WorkShiftStore.class.getSimpleName();
 
-    private Dictionary<String,MutableLiveData<WorkShift>> mOpenWorkShifts = new Hashtable<>();
-    private Dictionary<String,MutableLiveData<List<WorkShift>>> mWorkShiftsByEmployee = new Hashtable<>();
-
+    /// Singleton instance
     private static WorkShiftStore sInstance = null;
 
+    /// Employee to active time sheets mapping
+    /// @// TODO: 10/24/22 Consider removing this, and add active work shifts to store
+    private Dictionary<String, MutableLiveData<WorkShift>> mOpenWorkShifts = new Hashtable<>();
+
+    /**
+     * Get the work shift store singleton instance
+     * @return work shift store singleton
+     */
     public static WorkShiftStore getInstance() {
         if (null == sInstance) {
             sInstance = new WorkShiftStore();
@@ -31,11 +69,13 @@ public class WorkShiftStore {
         return sInstance;
     }
 
-    public int getOpenWorkShiftCount() {
-        int retval = mOpenWorkShifts.size();
-        return retval;
-    }
+    /// Lists of shifts per employee
+    private Dictionary<String, MutableLiveData<List<WorkShift>>> mWorkShiftsByEmployee = new Hashtable<>();
 
+    /**
+     * Notify active workshifts of a change
+     * @// TODO: 10/24/22 ponder moving to WorkShiftViewModel
+     */
     public void signalOpenWorkShifts() {
         Enumeration<MutableLiveData<WorkShift>> keyEnum = mOpenWorkShifts.elements();
         while (keyEnum.hasMoreElements()) {
@@ -45,18 +85,45 @@ public class WorkShiftStore {
         }
     }
 
-    public void addWorkShift(WorkShift workShift) {
+    /**
+     * Add a completed work shift to the store
+     * @param workShift Work Shift to add.
+     * @throws IllegalStateException    if the work shift is not complete
+     * @// TODO: 10/24/22 Add unique id to WorkShift so it can be easily identified for update
+     * @// TODO: 10/24/22 Add support for active worksheets
+     */
+    public void addCompletedWorkShift(WorkShift workShift) throws IllegalStateException {
+
+        // throw exception if not complete
+        if (! workShift.getShiftTimeSlice().isComplete()) {
+            throw new IllegalStateException("Attempted to add incomplete work shift");
+        }
+
+        // Get the list of shifts for the employee
         String employeeId = workShift.getEmployeeId();
-        MutableLiveData<List<WorkShift>> liveData = shiftListLiveDataFor(employeeId);
+        MutableLiveData<List<WorkShift>> liveData = getWorkShiftsFor(employeeId);
+
+        // Add the shift to the underlying list and post the value back
         List<WorkShift> shiftList = liveData.getValue();
         shiftList.add(workShift);
         liveData.postValue(shiftList);
+
+        // Remove the work shift from the "open" set
         mOpenWorkShifts.remove(workShift.getEmployeeId());
     }
 
+    /**
+     * Get an open work shift for the employee, creating one if none are open
+     * @param employeeId    employee for whom to create work shift
+     * @return  Work shift for employee
+     * @// TODO: 10/24/22 Ponder whether the MutableLiveData template is necessary
+     */
     public MutableLiveData<WorkShift> openWorkShiftFor(String employeeId) {
+
+        // Get the work shift from open shift store
         MutableLiveData<WorkShift> mutableLiveData = mOpenWorkShifts.get(employeeId);
         if (null == mutableLiveData) {
+            // Not there... add it
             WorkShift workShift = new WorkShift(employeeId);
             mutableLiveData = new MutableLiveData<>(workShift);
             mOpenWorkShifts.put(employeeId, mutableLiveData);
@@ -64,85 +131,26 @@ public class WorkShiftStore {
         return mutableLiveData;
     }
 
+    /**
+     * Get all work shifts completed by an employee
+     * @param employeeId    unique identifier of employee whose work shifts to get
+     * @return  List of work shifts for the employee
+     * @// TODO: 10/24/22 Ponder whether the MutableLiveData template is necessary
+     */
     public MutableLiveData<List<WorkShift>> getWorkShiftsFor(String employeeId) {
-        MutableLiveData<List<WorkShift>> retval = shiftListLiveDataFor(employeeId);
-        return retval;
-    }
 
-    private MutableLiveData<List<WorkShift>> shiftListLiveDataFor(String employeeId) {
+        // Get what's there for the employee, if anything
         MutableLiveData<List<WorkShift>> liveData = mWorkShiftsByEmployee.get(employeeId);
         if (null == liveData) {
-            liveData = requestWorkShifts(employeeId);
+
+            // Nothing - for now, create it
+            // TODO: Retrieve from persistent store
+            List<WorkShift> worksheetList = new ArrayList<>();
+            liveData = new MutableLiveData<>(worksheetList);
+
+            // Save it in the store
             mWorkShiftsByEmployee.put(employeeId, liveData);
         }
         return liveData;
-    }
-
-    private MutableLiveData<List<WorkShift>> requestWorkShifts(String employeeId) {
-
-        List<WorkShift> worksheetList = new ArrayList<>();
-
-//        maybeAddWorkShift(worksheetList, employeeId, 5, 30, 45);
-//        maybeAddWorkShift(worksheetList, employeeId, 4, 0, 60);
-//        maybeAddWorkShift(worksheetList, employeeId, 3, 45, 0);
-//        maybeAddWorkShift(worksheetList, employeeId, 2, 40, 60);
-//        maybeAddWorkShift(worksheetList, employeeId, 1, 20, 90);
-
-        final MutableLiveData<List<WorkShift>>
-                worksheetListData = new MutableLiveData<>(worksheetList);
-
-        return worksheetListData;
-    }
-
-    private void maybeAddWorkShift(List<WorkShift> workShiftList,
-                                  String employeeId,
-                                  int daysAgo,
-                                  int breakMinutes,
-                                  int lunchMinutes) {
-        TimeSlice shiftSlice, breakSlice, lunchSlice;
-
-        final long delta = daysAgo * 24 /*hours*/ * 60 /*minutes*/ * 60 /*seconds*/ * 1000 /*millis*/;
-        final Date now = new Date();
-        long millis = now.getTime() - delta;
-
-        final Date shiftStart = new Date(millis);
-
-        // Skip two hours
-        millis += 2 * 60/*minutes*/ * 60/*seconds*/ * 1000/*millis*/;
-
-        // Check for lunch
-        if (0 < breakMinutes) {
-            final long breakMillis = breakMinutes * 60/*seconds*/ * 1000/*millis*/;
-            final Date breakStart = new Date(millis);
-            millis += breakMillis;
-            final Date breakEnd = new Date(millis);
-            breakSlice = new TimeSlice(breakStart, breakEnd);
-        }
-        else {
-            breakSlice = new TimeSlice();
-        }
-
-        // Skip two hours
-        millis += 2 * 60/*minutes*/ * 60/*seconds*/ * 1000/*millis*/;
-
-        // Check for lunch
-        if (0 < lunchMinutes) {
-            final long lunchMillis = lunchMinutes * 60/*seconds*/ * 1000/*millis*/;
-            final Date lunchStart = new Date(millis);
-            millis += lunchMillis;
-            final Date lunchEnd = new Date(millis);
-            lunchSlice = new TimeSlice(lunchStart, lunchEnd);
-        }
-        else {
-            lunchSlice = new TimeSlice();
-        }
-
-        // Skip four hours
-        millis += 2 * 60/*minutes*/ * 60/*seconds*/ * 1000/*millis*/;
-        final Date shiftEnd = new Date(millis);
-        shiftSlice = new TimeSlice(shiftStart, shiftEnd);
-        final UUID uuid = UUID.randomUUID();
-        final WorkShift workShift = new WorkShift(uuid, employeeId, shiftSlice, breakSlice, lunchSlice);
-        workShiftList.add(workShift);
     }
 }

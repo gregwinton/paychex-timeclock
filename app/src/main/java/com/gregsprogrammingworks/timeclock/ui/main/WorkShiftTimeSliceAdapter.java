@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.gregsprogrammingworks.common.TimeSlice;
+import com.gregsprogrammingworks.timeclock.common.TimeSlice;
 import com.gregsprogrammingworks.timeclock.R;
 
 import com.gregsprogrammingworks.timeclock.model.WorkShift;

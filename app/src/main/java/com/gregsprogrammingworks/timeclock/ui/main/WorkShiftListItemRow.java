@@ -3,7 +3,7 @@ package com.gregsprogrammingworks.timeclock.ui.main;
 import android.view.View;
 import android.widget.TextView;
 
-import com.gregsprogrammingworks.common.TimeHelper;
+import com.gregsprogrammingworks.timeclock.common.TimeHelper;
 import com.gregsprogrammingworks.timeclock.R;
 import com.gregsprogrammingworks.timeclock.model.WorkShift;
 
@@ -25,9 +25,9 @@ public class WorkShiftListItemRow {
     }
 
     public void setWorkShift(WorkShift workShift) {
-        setShiftDate(workShift.getShiftTimeSlice().getStart());
-        setStartDate(workShift.getShiftTimeSlice().getStart());
-        setEndDate(workShift.getShiftTimeSlice().getEnd());
+        setShiftDate(workShift.getShiftTimeSlice().getStartDate());
+        setStartDate(workShift.getShiftTimeSlice().getStartDate());
+        setEndDate(workShift.getShiftTimeSlice().getEndDate());
         setTotalTime(workShift.shiftSeconds());
         setNetTime(workShift.onTheClockSeconds());
     }

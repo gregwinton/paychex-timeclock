@@ -26,7 +26,7 @@ import java.util.List;
      }
 
      public void addWorkShift(WorkShift workShift) {
-         mWorkShiftStore.addWorkShift(workShift);
+         mWorkShiftStore.addCompletedWorkShift(workShift);
      }
 
      public WorkShiftViewModel() {

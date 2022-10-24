@@ -88,7 +88,7 @@ public class EmployeeListFragment extends Fragment {
                 Employee employee = mEmployeeListLiveData.getValue().get(position);
 
                 // TODO show their timesheet or shift card
-                Fragment employeeFragment = WorkShiftListFragment.newInstance(employee.getId());
+                Fragment employeeFragment = WorkShiftListFragment.newInstance(employee.getEmployeeId());
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.container, employeeFragment, "workShiftList");
@@ -122,7 +122,7 @@ public class EmployeeListFragment extends Fragment {
 
         // Traverse the employee list, add entry "${name} (${id})" to  the employee rows array
         for (Employee employee : employeeList) {
-            String employeeRow = employee.getName() + " (" + employee.getId() + ")";
+            String employeeRow = employee.getName() + " (" + employee.getEmployeeId() + ")";
             adapterList.add(employeeRow);
         }
 
