@@ -82,11 +82,11 @@ public class WorkShiftStore {
 
         List<WorkShift> worksheetList = new ArrayList<>();
 
-        maybeAddWorkShift(worksheetList, employeeId, 5, 30, 45);
-        maybeAddWorkShift(worksheetList, employeeId, 4, 0, 60);
-        maybeAddWorkShift(worksheetList, employeeId, 3, 45, 0);
-        maybeAddWorkShift(worksheetList, employeeId, 2, 40, 60);
-        maybeAddWorkShift(worksheetList, employeeId, 1, 20, 90);
+//        maybeAddWorkShift(worksheetList, employeeId, 5, 30, 45);
+//        maybeAddWorkShift(worksheetList, employeeId, 4, 0, 60);
+//        maybeAddWorkShift(worksheetList, employeeId, 3, 45, 0);
+//        maybeAddWorkShift(worksheetList, employeeId, 2, 40, 60);
+//        maybeAddWorkShift(worksheetList, employeeId, 1, 20, 90);
 
         final MutableLiveData<List<WorkShift>>
                 worksheetListData = new MutableLiveData<>(worksheetList);

@@ -22,7 +22,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@android:color/black" />
         <TextView
-            android:id="@+id/ShiftStart"
+            android:id="@+id/ShiftStartDateText"
             android:layout_height="match_parent"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -33,7 +33,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@android:color/black" />
         <TextView
-            android:id="@+id/ShiftEnd"
+            android:id="@+id/ShiftEndDateText"
             android:layout_height="match_parent"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -44,7 +44,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@android:color/black" />
         <TextView
-            android:id="@+id/TotalTimeText"
+            android:id="@+id/ShiftTotalTimeText"
             android:layout_height="match_parent"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -55,7 +55,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@android:color/black" />
         <TextView
-            android:id="@+id/NetTimeText"
+            android:id="@+id/ShiftNetTimeText"
             android:layout_height="match_parent"
             android:layout_width="0dp"
             android:layout_weight="1"

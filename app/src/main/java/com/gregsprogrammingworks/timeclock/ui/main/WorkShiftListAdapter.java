@@ -16,8 +16,6 @@ import java.util.List;
 
 public class WorkShiftListAdapter extends ArrayAdapter<WorkShift> {
 
-    private List<WorkShift> mWorkShiftList;
-
     private final String mEmployeeId;
 
     public WorkShiftListAdapter(String employeeId, Context context) {
@@ -56,8 +54,10 @@ public class WorkShiftListAdapter extends ArrayAdapter<WorkShift> {
     }
 
     public void refresh() {
-        MutableLiveData<List<WorkShift>> shifts = WorkShiftStore.getInstance().getWorkShiftsFor(mEmployeeId);
-        mWorkShiftList = shifts.getValue();
+        MutableLiveData<List<WorkShift>> shiftListLiveData = WorkShiftStore.getInstance().getWorkShiftsFor(mEmployeeId);
+        List<WorkShift> shiftList = shiftListLiveData.getValue();
+        clear();
+        addAll(shiftList);
         notifyDataSetChanged();
     }
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -78,7 +79,8 @@ public class WorkShiftListFragment extends Fragment {
         mShiftListView = view.findViewById(R.id.WorkShiftListView);
 
         // Set the employee list view's adapter from the live data
-        makeWorkShiftListAdapter();
+        ListAdapter listAdapter = makeWorkShiftListAdapter();
+        mShiftListView.setAdapter(listAdapter);
 
         // Set the employee list view's item click listener
         AdapterView.OnItemClickListener shiftListViewOnItemClickListener = new AdapterView.OnItemClickListener() {
@@ -122,23 +124,12 @@ public class WorkShiftListFragment extends Fragment {
      * @return  list adapter
      * @// TODO: 10/23/22 Ponder moving this to ViewModel/Res
      */
-    private void makeWorkShiftListAdapter() {
-
-        // Get the list of employees from the live data.
-        List<WorkShift> workShiftList = mShiftListData.getValue();
+    private ListAdapter makeWorkShiftListAdapter() {
 
         // Instantiate a simple list array adapter
-        ArrayAdapter<WorkShift> listAdapter = new ArrayAdapter<String>(
-                WorkShiftListFragment.this.getContext(),
-                R.layout.row_shift_list_item,
-                workShiftList);
+        Context ctx = getContext();
+        ListAdapter adapter = new WorkShiftListAdapter(mEmployeeId, ctx);
 
-        // See if there's already an adapter...
-        ListAdapter adapter = mShiftListView.getAdapter();
-        if (null == adapter) {
-            // TODO: Add sort options - by id, by date, by total?
-            adapter = new WorkShiftListAdapter(mEmployeeId, getContext());
-            mShiftListView.setAdapter(adapter);
-        }
+        return adapter;
     }
 }

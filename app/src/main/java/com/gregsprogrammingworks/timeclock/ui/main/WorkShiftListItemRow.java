@@ -18,10 +18,10 @@ public class WorkShiftListItemRow {
 
     public WorkShiftListItemRow(View view) {
         mShiftDateText = view.findViewById(R.id.ShiftDateText);
-        mStartDateText = view.findViewById(R.id.StartTimeText);
-        mEndDateText = view.findViewById(R.id.EndTimeText);
-        mTotalTimeText = view.findViewById(R.id.TotalTimeText);
-        mNetTimeText = view.findViewById(R.id.NetTimeText);
+        mStartDateText = view.findViewById(R.id.ShiftStartDateText);
+        mEndDateText = view.findViewById(R.id.ShiftEndDateText);
+        mTotalTimeText = view.findViewById(R.id.ShiftTotalTimeText);
+        mNetTimeText = view.findViewById(R.id.ShiftNetTimeText);
     }
 
     public void setWorkShift(WorkShift workShift) {
