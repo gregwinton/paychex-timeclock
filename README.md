@@ -29,7 +29,6 @@ Even without the optional requirements, this is a tall set of requirements to im
 As it is, the result still could use a bit of polish:
 
 ## Next Steps
-- remove "maybeHideButtons" logic from WorkShiftFragment. I kind of like the look with the buttons disabled.
 - persist data between sessions
     - ponder "saving" active shifts
 - clean up, comment, refactor

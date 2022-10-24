@@ -1,17 +1,43 @@
+/*                                                EmployeeListFragment.java
+ *                                                                TimeClock
+ * ------------------------------------------------------------------------
+ *
+ * ABSTRACT:
+ * --------
+ *  Fragment presenting a list of employees
+ * ------------------------------------------------------------------------
+ *
+ * COPYRIGHT:
+ * ---------
+ *  Copyright (C) 2022 Greg Winton
+ * ------------------------------------------------------------------------
+ *
+ * LICENSE:
+ * -------
+ *  This program is free software: you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License as
+ *  published by the Free Software Foundation, either version 3 of
+ *  the License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ *  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.
+ *
+ *  If not, see http://www.gnu.org/licenses/.
+ * ------------------------------------------------------------------------ */
 package com.gregsprogrammingworks.timeclock.ui.main;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProvider;
+// language, os, platform headers
+import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,21 +46,41 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import com.gregsprogrammingworks.timeclock.R;
-import com.gregsprogrammingworks.timeclock.model.Employee;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+// project imports
 import com.gregsprogrammingworks.timeclock.viewmodel.EmployeeViewModel;
+import com.gregsprogrammingworks.timeclock.model.Employee;
+import com.gregsprogrammingworks.timeclock.R;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ *  Fragment presenting a list of employees
+ */
 public class EmployeeListFragment extends Fragment {
 
+    /// TAG for logging
     private static final String TAG = EmployeeListFragment.class.getSimpleName();
 
+    /// Employee view model
     private EmployeeViewModel mEmployeeViewModel;
+
+    /// Live Data list of employees
+    /// @// TODO: 10/24/22 Ponder whether MutableLiveData template is necessary
     private MutableLiveData<List<Employee>> mEmployeeListLiveData;
+
+    /// ListView presenting list of employees
     private ListView mEmployeeListView;
 
+    /**
+     * Factory method creates a new EmployeeListFragment instance
+     * @return  new EmployeeListFragment instance
+     */
     public static EmployeeListFragment newInstance() {
         return new EmployeeListFragment();
     }
@@ -48,8 +94,7 @@ public class EmployeeListFragment extends Fragment {
         mEmployeeListLiveData = mEmployeeViewModel.getEmployees();
     }
 
-    @Nullable
-    @Override
+    @Override @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
@@ -87,7 +132,7 @@ public class EmployeeListFragment extends Fragment {
                 // Get the employee that was clicked on
                 Employee employee = mEmployeeListLiveData.getValue().get(position);
 
-                // TODO show their timesheet or shift card
+                // Want to show (employee) work shift list fragment
                 Fragment employeeFragment = WorkShiftListFragment.newInstance(employee.getEmployeeId());
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
