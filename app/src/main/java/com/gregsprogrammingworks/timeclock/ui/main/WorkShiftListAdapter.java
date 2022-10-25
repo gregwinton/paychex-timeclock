@@ -54,10 +54,11 @@ public class WorkShiftListAdapter extends ArrayAdapter<WorkShift> {
     }
 
     public void refresh() {
-        MutableLiveData<List<WorkShift>> shiftListLiveData = WorkShiftStore.getInstance().getWorkShiftsFor(mEmployeeId);
-        List<WorkShift> shiftList = shiftListLiveData.getValue();
+        Context context = getContext();
+        WorkShiftStore store = new WorkShiftStore(context);
+        MutableLiveData<List<WorkShift>> shiftListLiveData = store.getWorkShiftsFor(mEmployeeId);
         clear();
-        addAll(shiftList);
+        addAll(shiftListLiveData.getValue());
         notifyDataSetChanged();
     }
 }

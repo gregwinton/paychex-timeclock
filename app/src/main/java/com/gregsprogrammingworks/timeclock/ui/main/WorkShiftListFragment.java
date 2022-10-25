@@ -74,7 +74,6 @@ public class WorkShiftListFragment extends Fragment {
 
     private WorkShiftViewModel mShiftViewModel;
     private EmployeeViewModel mEmployeeViewModel;
-    private MutableLiveData<List<WorkShift>> mShiftListData;
 
     private ListView mShiftListView;
     private FloatingActionButton mAddShiftButton;
@@ -87,7 +86,7 @@ public class WorkShiftListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mShiftViewModel = new ViewModelProvider(this).get(WorkShiftViewModel.class);
-        mShiftListData = mShiftViewModel.workShiftsFor(mEmployeeId);
+        mShiftViewModel.start(getContext());
 
         mEmployeeViewModel = new ViewModelProvider(this).get(EmployeeViewModel.class);
     }
@@ -118,8 +117,9 @@ public class WorkShiftListFragment extends Fragment {
         AdapterView.OnItemClickListener shiftListViewOnItemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // Get the employee that was clicked on
-                WorkShift workShift = mShiftListData.getValue().get(position);
+                // Get the employee that was clicked
+                WorkShiftListAdapter adapter = (WorkShiftListAdapter) mShiftListView.getAdapter();
+                WorkShift workShift = adapter.getItem(position);
 
                 // TODO show their timesheet or shift card
                 Fragment fragment = WorkShiftFragment.newInstance(workShift);

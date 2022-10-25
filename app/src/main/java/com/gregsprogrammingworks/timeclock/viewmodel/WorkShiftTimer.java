@@ -33,6 +33,10 @@
 package com.gregsprogrammingworks.timeclock.viewmodel;
 
 // project imports
+import android.content.Context;
+
+import androidx.lifecycle.MutableLiveData;
+
 import com.gregsprogrammingworks.timeclock.store.WorkShiftStore;
 
 /**
@@ -43,17 +47,23 @@ public class WorkShiftTimer {
     /// Singleton instance - only one timer at a time
     private static WorkShiftTimer sInstance;
 
+    private final WorkShiftStore mStore;
+
     /// Timer thread
     private Thread mTimerThread = null;
 
     /**
      * Factory method - starts the timer thread if not already started
      */
-    static public void maybeStartThread() {
+    static public void maybeStartThread(Context context) {
         if (null == sInstance) {
-            sInstance = new WorkShiftTimer();
+            sInstance = new WorkShiftTimer(context);
             sInstance.startTimer();
         }
+    }
+
+    private WorkShiftTimer(Context context) {
+        mStore = new WorkShiftStore(context);
     }
 
     /**
@@ -66,9 +76,8 @@ public class WorkShiftTimer {
                 boolean done = false;
                 while (!done) {
                     try {
-                        // Get the store and and signal any open shifts
-                        WorkShiftStore store = WorkShiftStore.getInstance();
-                        store.signalOpenWorkShifts();
+                        // Signal any open shifts
+                        mStore.signalOpenWorkShifts();
 
                         // Wait a second, then do it again
                         Thread.sleep(1000);

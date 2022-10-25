@@ -112,17 +112,15 @@ public class WorkShiftFragment extends Fragment {
 
         // Instantisate the view model
         mWorkShiftViewModel = new ViewModelProvider(this).get(WorkShiftViewModel.class);
+        mWorkShiftViewModel.start(getContext());
         if (null == mWorkShiftLiveData) {
             // That worked - get the data we'll want
             mWorkShiftLiveData = mWorkShiftViewModel.openWorkShiftFor(mEmployeeId);
-            // We'll want to observe the data
-            // for now...
-            mWorkShiftLiveData.observe(this, mWorkShiftObserver);
         }
-        else {
-            // WorkShift passed to constructor - therefore already complete.
-            // TODO: add explicit support for existing, incomplete work shifts
-        }
+
+        // We'll want to observe the data
+        // for now...
+        mWorkShiftLiveData.observe(this, mWorkShiftObserver);
     }
 
     @Override
@@ -181,8 +179,8 @@ public class WorkShiftFragment extends Fragment {
             else if (workShift.canEndShift()) {
                 workShift.endShift();
                 mWorkShiftLiveData.postValue(workShift);
-                mWorkShiftViewModel.addWorkShift(workShift);
             }
+            mWorkShiftViewModel.saveWorkShift(workShift);
         }
     };
 
@@ -190,15 +188,16 @@ public class WorkShiftFragment extends Fragment {
     private View.OnClickListener mBreakButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            WorkShift workBreak = mWorkShiftLiveData.getValue();
-            if (workBreak.canStartBreak()) {
-                workBreak.startBreak();
-                mWorkShiftLiveData.postValue(workBreak);
+            WorkShift workShift = mWorkShiftLiveData.getValue();
+            if (workShift.canStartBreak()) {
+                workShift.startBreak();
+                mWorkShiftLiveData.postValue(workShift);
             }
-            else if (workBreak.canEndBreak()) {
-                workBreak.endBreak();
-                mWorkShiftLiveData.postValue(workBreak);
+            else if (workShift.canEndBreak()) {
+                workShift.endBreak();
+                mWorkShiftLiveData.postValue(workShift);
             }
+            mWorkShiftViewModel.saveWorkShift(workShift);
         }
     };
 
@@ -206,15 +205,16 @@ public class WorkShiftFragment extends Fragment {
     private View.OnClickListener mLunchButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            WorkShift workLunch = mWorkShiftLiveData.getValue();
-            if (workLunch.canStartLunch()) {
-                workLunch.startLunch();
-                mWorkShiftLiveData.postValue(workLunch);
+            WorkShift workShift = mWorkShiftLiveData.getValue();
+            if (workShift.canStartLunch()) {
+                workShift.startLunch();
+                mWorkShiftLiveData.postValue(workShift);
             }
-            else if (workLunch.canEndLunch()) {
-                workLunch.endLunch();
-                mWorkShiftLiveData.postValue(workLunch);
+            else if (workShift.canEndLunch()) {
+                workShift.endLunch();
+                mWorkShiftLiveData.postValue(workShift);
             }
+            mWorkShiftViewModel.saveWorkShift(workShift);
         }
     };
 

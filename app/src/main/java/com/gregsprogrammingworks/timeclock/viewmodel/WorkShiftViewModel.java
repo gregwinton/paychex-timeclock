@@ -33,6 +33,8 @@
 package com.gregsprogrammingworks.timeclock.viewmodel;
 
 // language, os, platform imports
+import android.content.Context;
+
 import java.util.List;
 
 import com.gregsprogrammingworks.timeclock.model.WorkShift;
@@ -49,15 +51,22 @@ import androidx.lifecycle.ViewModel;
  */
 public class WorkShiftViewModel extends ViewModel {
 
-     /// Cache the work shift store
-     private WorkShiftStore mWorkShiftStore = WorkShiftStore.getInstance();
+    /// tag for logging/exceptions
+    private static final String TAG = WorkShiftViewModel.class.getSimpleName();
+
+    /// Work shift store
+    private WorkShiftStore mWorkShiftStore;
 
     /**
      * Constructor for work shift view model.
      */
     public WorkShiftViewModel() {
+    }
+
+    public void start(Context context) {
+        mWorkShiftStore = new WorkShiftStore(context);
         // Start the work shift update thread
-        WorkShiftTimer.maybeStartThread();
+        WorkShiftTimer.maybeStartThread(context);
     }
 
     /**
@@ -68,6 +77,8 @@ public class WorkShiftViewModel extends ViewModel {
      * @// TODO: 10/24/22 Ponder combining openWorkShiftFor with workShiftsFor
      */
      public MutableLiveData<WorkShift> openWorkShiftFor(String employeeId) {
+         startedOrThrow();
+
          MutableLiveData<WorkShift> retval = mWorkShiftStore.openWorkShiftFor(employeeId);
          return retval;
      }
@@ -78,6 +89,8 @@ public class WorkShiftViewModel extends ViewModel {
      * @return open work shift for specified employee
      */
      public MutableLiveData<List<WorkShift>> workShiftsFor(String employeeId) {
+         startedOrThrow();
+
          MutableLiveData<List<WorkShift>> retval = mWorkShiftStore.getWorkShiftsFor(employeeId);
          return retval;
      }
@@ -85,9 +98,15 @@ public class WorkShiftViewModel extends ViewModel {
     /**
      * Add a (complete) work shift
      * @param workShift completed work shift
-     * @throws IllegalStateException    if the work shift is not complete
      */
-     public void addWorkShift(WorkShift workShift) throws IllegalStateException {
-         mWorkShiftStore.addCompletedWorkShift(workShift);
+     public void saveWorkShift(WorkShift workShift) {
+         startedOrThrow();
+         mWorkShiftStore.saveWorkShift(workShift);
+     }
+
+     private void startedOrThrow() {
+         if (null == mWorkShiftStore) {
+             throw new IllegalStateException(TAG + ": view model not started");
+         }
      }
 }
