@@ -66,6 +66,10 @@ public class WorkShiftViewModel extends ViewModel {
     public WorkShiftViewModel() {
     }
 
+    /**
+     * Start the view model
+     * @param context   Context in which view model executes
+     */
     public MutableLiveData<Long> start(Context context) {
         mWorkShiftStore = new WorkShiftStore(context);
         // Start the work shift update thread
@@ -108,7 +112,11 @@ public class WorkShiftViewModel extends ViewModel {
          mWorkShiftStore.saveWorkShift(workShift);
      }
 
-     private void startedOrThrow() {
+    /**
+     * Verify that the view model has been started, or throw
+     * @throws IllegalStateException    view model not started
+     */
+    private void startedOrThrow() throws IllegalStateException {
          if (null == mWorkShiftStore) {
              throw new IllegalStateException(TAG + ": view model not started");
          }

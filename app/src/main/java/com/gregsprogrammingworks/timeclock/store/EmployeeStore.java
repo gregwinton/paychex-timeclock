@@ -70,16 +70,8 @@ public class EmployeeStore {
      */
     public MutableLiveData<List<Employee>> refreshEmployees() {
 
+        // Get the employees
         List<Employee> employeeList = mDataStore.retrieveAll();
-//        if (0 == employeeList.size()) {
-//            // TODO: when we have persistence, gut this, and retrieve from storage
-//            // Create a canned list of employees
-//            maybeAddEmployee("Cide H Benengeli");
-//            maybeAddEmployee("Sancho Panzes");
-//            maybeAddEmployee("Alonso Quijano");
-//            maybeAddEmployee("Dulcinea del Toboso");
-//            employeeList = mDataStore.retrieveAll();
-//        }
 
         // Create a mutable live data around the list and return.
         mEmployeeListData.setValue(employeeList);
@@ -87,25 +79,12 @@ public class EmployeeStore {
         return mEmployeeListData;
     }
 
+    /**
+     * Add or update employee in the store
+     * @param employee Employee to save
+     */
     public void saveEmployee(Employee employee) {
         mDataStore.save(employee);
         refreshEmployees();
-    }
-
-    /**
-     * Add an employee to the list, if employee id and name are valid
-     * @param name  Employee name
-     */
-    private void maybeAddEmployee(String name) {
-        try {
-            // Create the employee - will throw if id or name is invalid
-            Employee employee = new Employee(name);
-
-            // Save it in the store
-            mDataStore.save(employee);
-        }
-        catch (IllegalArgumentException ex) {
-            Log.e(TAG, "Exception thrown creating Employee: " + ex.getLocalizedMessage(), ex);
-        }
     }
 }

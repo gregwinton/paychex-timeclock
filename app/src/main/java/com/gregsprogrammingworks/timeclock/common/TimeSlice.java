@@ -80,12 +80,6 @@ public class TimeSlice {
         this(that.getStartDate(), that.getEndDate());
     }
 
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(mStartDate, mEndDate);
-        return hash;
-    }
-
     /**
      * How many seconds in the time slice
      * @returns if finished, time in seconds elapsed from start to end.
@@ -201,5 +195,11 @@ public class TimeSlice {
      */
     public Date getEndDate() {
         return mEndDate;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = Objects.hash(mStartDate, mEndDate);
+        return hash;
     }
 }

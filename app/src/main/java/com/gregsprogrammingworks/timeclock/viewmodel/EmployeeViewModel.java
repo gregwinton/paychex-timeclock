@@ -38,6 +38,7 @@ import android.content.Context;
 import java.util.List;
 
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 // project imports
@@ -58,14 +59,27 @@ public class EmployeeViewModel extends ViewModel {
     /// live data list of employees
     private MutableLiveData<List<Employee>> mEmployeesLiveData;
 
+    /// observer for Employee live data
+    private Observer<List<Employee>> mEmployeeListObserver = new Observer<List<Employee>>() {
+
+        @Override
+        public void onChanged(List<Employee> employeeList) {
+        }
+    };
+
     /**
      * Constructor - initializes employee data store
      */
     public EmployeeViewModel() {
     }
 
+    /**
+     * Start the view model
+     * @param context   Context in which view model executes
+     */
     public void start(Context context) {
         mEmployeeStore = new EmployeeStore(context);
+        mEmployeesLiveData = mEmployeeStore.refreshEmployees();
     }
 
     /**
@@ -75,18 +89,22 @@ public class EmployeeViewModel extends ViewModel {
      */
     public MutableLiveData<List<Employee>> getEmployees() {
         startedOrThrow();
-        if (null == mEmployeesLiveData) {
-            mEmployeesLiveData = mEmployeeStore.refreshEmployees();
-        }
         return mEmployeesLiveData;
     }
 
+    /**
+     * Save a new employee into the system
+     * @param employee  employee to save
+     */
     public void saveEmployee(Employee employee) {
         mEmployeeStore.saveEmployee(employee);
-        mEmployeesLiveData = null;
     }
 
-    private void startedOrThrow() {
+    /**
+     * Verify that the view model has been started, or throw
+     * @throws IllegalStateException    view model not started
+     */
+    private void startedOrThrow() throws IllegalStateException {
         if (null == mEmployeeStore) {
             throw new IllegalStateException(TAG + ": view model not started");
         }

@@ -55,6 +55,7 @@ public class WorkShiftTimer {
     /// Timer thread
     private Thread mTimerThread = null;
 
+    /// Live data for observers of the timer
     private MutableLiveData<Long> mTimeLiveData;
 
     /**
@@ -70,10 +71,18 @@ public class WorkShiftTimer {
         return liveData;
     }
 
+    /**
+     * Private constructor, invoked by class factory method maybeStartTimer()
+     * @param context   Execution context for timer
+     */
     private WorkShiftTimer(Context context) {
         mContext = context;
     }
 
+    /**
+     * Lazy-instantiation of timer live data
+     * @return timer live data
+     */
     private MutableLiveData<Long> timeLiveData() {
         if (null == mTimeLiveData) {
             Long timeInSeconds = new Long(0);

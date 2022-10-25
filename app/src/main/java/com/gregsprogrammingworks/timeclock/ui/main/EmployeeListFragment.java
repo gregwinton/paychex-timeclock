@@ -52,6 +52,7 @@ import android.widget.ListView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -82,6 +83,15 @@ public class EmployeeListFragment extends Fragment {
 
     /// Add employee button
     private FloatingActionButton mAddEmployeeButton;
+
+    /// observer for Employee live data
+    private Observer<List<Employee>> mEmployeeListObserver = new Observer<List<Employee>>() {
+
+        @Override
+        public void onChanged(List<Employee> employeeList) {
+            refresh();
+        }
+    };
 
     /**
      * Factory method creates a new EmployeeListFragment instance
@@ -163,6 +173,9 @@ public class EmployeeListFragment extends Fragment {
         refresh();
     }
 
+    /**
+     * Add a new employee
+     */
     private void addEmployee() {
         EmployeeAddEditDialog dialog = new EmployeeAddEditDialog(getContext());
         dialog.show();

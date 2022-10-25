@@ -96,14 +96,6 @@ public class WorkShift extends BaseModel {
         mLunchTimeSlice = lunchSlice;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(mUuid, mEmployeeId,
-                mShiftTimeSlice, mBreakTimeSlice, mLunchTimeSlice);
-
-        return hash;
-    }
-
     /// Get accessor for employee id
     public String getEmployeeId() {
         return mEmployeeId;
@@ -305,5 +297,13 @@ public class WorkShift extends BaseModel {
     public long lunchSeconds() {
         long retval = mLunchTimeSlice.elapsedSeconds();
         return retval;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = Objects.hash(mUuid, mEmployeeId,
+                mShiftTimeSlice, mBreakTimeSlice, mLunchTimeSlice);
+
+        return hash;
     }
 }

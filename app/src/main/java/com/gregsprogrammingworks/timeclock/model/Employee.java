@@ -48,9 +48,10 @@ public class Employee extends BaseModel {
     private String mName;
 
     /**
-     * Employee constructor with unique employeeId and name
-     * @param uuid    Employee unique identifier
+     * Employee constructor for existing employee
+     * @param uuid  Employee unique identifier
      * @param name  Employee name
+     * @#throws IllegalArgumentException if name is invalid
      */
     public Employee(UUID uuid, String name) throws IllegalArgumentException {
 
@@ -66,15 +67,14 @@ public class Employee extends BaseModel {
         mName = name;
     }
 
+    /**
+     * Employee constructor with unique employeeId and name
+     * @param name  Employee name
+     * @throws IllegalArgumentException if name is invalid
+     */
     public Employee(String name) throws IllegalArgumentException {
         super();
         setName(name);
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(getUuid(), getName());
-        return hash;
     }
 
     /**
@@ -101,6 +101,12 @@ public class Employee extends BaseModel {
     public void setName(String name) throws IllegalArgumentException {
         ValidNameOrThrow(name);
         mName = name;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = Objects.hash(getUuid(), getName());
+        return hash;
     }
 
     /**
