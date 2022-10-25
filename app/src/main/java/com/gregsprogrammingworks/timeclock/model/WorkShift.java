@@ -39,13 +39,19 @@ package com.gregsprogrammingworks.timeclock.model;
 // project imports
 import com.gregsprogrammingworks.timeclock.common.TimeSlice;
 
+import java.util.Objects;
+import java.util.UUID;
+
 /**
  * WorkShift model class
  */
-public class WorkShift {
+public class WorkShift extends BaseModel {
 
     /// Tag for logging
     private static final String TAG = WorkShift.class.getSimpleName();
+
+    /// Unique id of shift instance
+    private final UUID mUuid;
 
     /// Id of employee working shift
     private final String mEmployeeId;
@@ -64,10 +70,11 @@ public class WorkShift {
      * @param employeeId    Employee for whom to create work shift
      */
     public WorkShift(String employeeId) {
-        mEmployeeId = employeeId;
-        mShiftTimeSlice = new TimeSlice();
-        mBreakTimeSlice = new TimeSlice();
-        mLunchTimeSlice = new TimeSlice();
+        this(UUID.randomUUID(),
+                employeeId,
+                new TimeSlice(),
+                new TimeSlice(),
+                new TimeSlice());
     }
 
     /**
@@ -77,10 +84,12 @@ public class WorkShift {
      * @param breakSlice    Break start, stop date/times, if any
      * @param lunchSlice    Lunch start, stop date/times, if any
      */
-    public WorkShift(String employeeId,
+    public WorkShift(UUID uuid,
+                     String employeeId,
                      TimeSlice shiftSlice,
                      TimeSlice breakSlice,
                      TimeSlice lunchSlice) {
+        mUuid = uuid;
         mEmployeeId = employeeId;
         mShiftTimeSlice = shiftSlice;
         mBreakTimeSlice = breakSlice;
@@ -288,5 +297,13 @@ public class WorkShift {
     public long lunchSeconds() {
         long retval = mLunchTimeSlice.elapsedSeconds();
         return retval;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = Objects.hash(mUuid, mEmployeeId,
+                mShiftTimeSlice, mBreakTimeSlice, mLunchTimeSlice);
+
+        return hash;
     }
 }

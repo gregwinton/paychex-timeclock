@@ -36,25 +36,30 @@ package com.gregsprogrammingworks.timeclock.ui.main;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 // project imports
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.gregsprogrammingworks.timeclock.viewmodel.EmployeeViewModel;
 import com.gregsprogrammingworks.timeclock.model.Employee;
 import com.gregsprogrammingworks.timeclock.R;
@@ -71,11 +76,22 @@ public class EmployeeListFragment extends Fragment {
     private EmployeeViewModel mEmployeeViewModel;
 
     /// Live Data list of employees
-    /// @// TODO: 10/24/22 Ponder whether MutableLiveData template is necessary
     private MutableLiveData<List<Employee>> mEmployeeListLiveData;
 
     /// ListView presenting list of employees
     private ListView mEmployeeListView;
+
+    /// Add employee button
+    private FloatingActionButton mAddEmployeeButton;
+
+    /// observer for Employee live data
+    private Observer<List<Employee>> mEmployeeListObserver = new Observer<List<Employee>>() {
+
+        @Override
+        public void onChanged(List<Employee> employeeList) {
+            refresh();
+        }
+    };
 
     /**
      * Factory method creates a new EmployeeListFragment instance
@@ -91,7 +107,7 @@ public class EmployeeListFragment extends Fragment {
 
         // Cache some data
         mEmployeeViewModel = new ViewModelProvider(this).get(EmployeeViewModel.class);
-        mEmployeeListLiveData = mEmployeeViewModel.getEmployees();
+        mEmployeeViewModel.start(getContext());
     }
 
     @Override @Nullable
@@ -108,6 +124,14 @@ public class EmployeeListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (0 == mEmployeeListLiveData.getValue().size()) {
+            addEmployee();
+        }
+    }
+
     /**
      * Set up our bits of the fragment's view
      * for now, just the employee list view
@@ -115,20 +139,10 @@ public class EmployeeListFragment extends Fragment {
      */
     void setupViews(View view) {
 
-        // Find the employee list view
-        mEmployeeListView = view.findViewById(R.id.employeeListView);
-
-        // Set the employee list view's adapter from the live data
-        ListAdapter employeeListAdapter = makeEmployeeListAdapter();
-        mEmployeeListView.setAdapter(employeeListAdapter);
-
         // Set the employee list view's item click listener
         AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // Cache the context. It just makes the code nicer
-                Context ctx = EmployeeListFragment.this.getContext();
-
                 // Get the employee that was clicked on
                 Employee employee = mEmployeeListLiveData.getValue().get(position);
 
@@ -141,7 +155,30 @@ public class EmployeeListFragment extends Fragment {
                 fragmentTransaction.commit();
             }
         };
+
+        // Find the employee list view
+        mEmployeeListView = view.findViewById(R.id.employeeListView);
         mEmployeeListView.setOnItemClickListener(onItemClickListener);
+
+        View.OnClickListener addButtonOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addEmployee();
+            }
+        };
+        mAddEmployeeButton = view.findViewById(R.id.EmployeeAddButton);
+        mAddEmployeeButton.setOnClickListener(addButtonOnClickListener);
+
+        // Set the employee list view's adapter from the live data
+        refresh();
+    }
+
+    /**
+     * Add a new employee
+     */
+    private void addEmployee() {
+        EmployeeAddEditDialog dialog = new EmployeeAddEditDialog(getContext());
+        dialog.show();
     }
 
     /**
@@ -149,7 +186,7 @@ public class EmployeeListFragment extends Fragment {
      * @return  list adapter
      * @// TODO: 10/22/22 Ponder moving this to ViewModel/Res
      */
-    ListAdapter makeEmployeeListAdapter() {
+    void refresh() {
 
         // TODO: Add sort options - by name, by id, by total?
 
@@ -159,6 +196,10 @@ public class EmployeeListFragment extends Fragment {
          *      haven't followed the latest news on java compilers, i just expect them to do their
          *      best. (gregw, 2022.10.22)
          */
+        if (null == mEmployeeListLiveData) {
+            mEmployeeListLiveData = mEmployeeViewModel.getEmployees();
+        }
+
         // Get the list of employees from the live data.
         List<Employee> employeeList = mEmployeeListLiveData.getValue();
 
@@ -167,17 +208,49 @@ public class EmployeeListFragment extends Fragment {
 
         // Traverse the employee list, add entry "${name} (${id})" to  the employee rows array
         for (Employee employee : employeeList) {
-            String employeeRow = employee.getName() + " (" + employee.getEmployeeId() + ")";
+            String employeeRow = employee.getName();
             adapterList.add(employeeRow);
         }
 
         // Instantiate a simple list array adapter
-        ArrayAdapter<String> employeeListAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> employeeListAdapter = new ArrayAdapter<>(
                 EmployeeListFragment.this.getContext(),
                 android.R.layout.simple_list_item_1,
                 adapterList);
 
-        // Return result
-        return employeeListAdapter;
+        mEmployeeListView.setAdapter(employeeListAdapter);
+    }
+
+    private class EmployeeAddEditDialog {
+
+        private View mView;
+        private EditText mNameEdit;
+        private AlertDialog.Builder mAlertBuilder;
+
+        EmployeeAddEditDialog(Context context) {
+            // It's a new view - inflate the view
+            LayoutInflater inflater = LayoutInflater.from(context);
+            mView = inflater.inflate(R.layout.dialog_add_edit_employee_layout, null, false);
+            mNameEdit = mView.findViewById(R.id.NameEdit);
+
+            mAlertBuilder = new AlertDialog.Builder(context);
+            mAlertBuilder.setTitle("Add Employee");
+            mAlertBuilder.setView(mView);
+            mAlertBuilder.setPositiveButton("Save", mSaveButtonOnClickListener);
+        }
+
+        void show() {
+            mAlertBuilder.show();
+        }
+
+        private DialogInterface.OnClickListener mSaveButtonOnClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String name = mNameEdit.getText().toString();
+                Employee employee = new Employee(name);
+                mEmployeeViewModel.saveEmployee(employee);
+                EmployeeListFragment.this.refresh();
+            }
+        };
     }
 }

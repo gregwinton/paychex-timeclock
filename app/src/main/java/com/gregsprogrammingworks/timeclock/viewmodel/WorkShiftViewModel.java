@@ -33,12 +33,16 @@
 package com.gregsprogrammingworks.timeclock.viewmodel;
 
 // language, os, platform imports
+import android.content.Context;
+import android.util.Log;
+
 import java.util.List;
 
 import com.gregsprogrammingworks.timeclock.model.WorkShift;
 import com.gregsprogrammingworks.timeclock.store.WorkShiftStore;
 
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 
@@ -49,15 +53,28 @@ import androidx.lifecycle.ViewModel;
  */
 public class WorkShiftViewModel extends ViewModel {
 
-     /// Cache the work shift store
-     private WorkShiftStore mWorkShiftStore = WorkShiftStore.getInstance();
+    /// tag for logging/exceptions
+    private static final String TAG = WorkShiftViewModel.class.getSimpleName();
+
+    /// Work shift store
+    private WorkShiftStore mWorkShiftStore;
+    private MutableLiveData<Long> mTimerLiveData;
 
     /**
      * Constructor for work shift view model.
      */
     public WorkShiftViewModel() {
+    }
+
+    /**
+     * Start the view model
+     * @param context   Context in which view model executes
+     */
+    public MutableLiveData<Long> start(Context context) {
+        mWorkShiftStore = new WorkShiftStore(context);
         // Start the work shift update thread
-        WorkShiftTimer.maybeStartThread();
+        mTimerLiveData = WorkShiftTimer.maybeStartThread(context);
+        return mTimerLiveData;
     }
 
     /**
@@ -68,6 +85,8 @@ public class WorkShiftViewModel extends ViewModel {
      * @// TODO: 10/24/22 Ponder combining openWorkShiftFor with workShiftsFor
      */
      public MutableLiveData<WorkShift> openWorkShiftFor(String employeeId) {
+         startedOrThrow();
+
          MutableLiveData<WorkShift> retval = mWorkShiftStore.openWorkShiftFor(employeeId);
          return retval;
      }
@@ -78,6 +97,8 @@ public class WorkShiftViewModel extends ViewModel {
      * @return open work shift for specified employee
      */
      public MutableLiveData<List<WorkShift>> workShiftsFor(String employeeId) {
+         startedOrThrow();
+
          MutableLiveData<List<WorkShift>> retval = mWorkShiftStore.getWorkShiftsFor(employeeId);
          return retval;
      }
@@ -85,9 +106,19 @@ public class WorkShiftViewModel extends ViewModel {
     /**
      * Add a (complete) work shift
      * @param workShift completed work shift
-     * @throws IllegalStateException    if the work shift is not complete
      */
-     public void addWorkShift(WorkShift workShift) throws IllegalStateException {
-         mWorkShiftStore.addCompletedWorkShift(workShift);
+     public void saveWorkShift(WorkShift workShift) {
+         startedOrThrow();
+         mWorkShiftStore.saveWorkShift(workShift);
+     }
+
+    /**
+     * Verify that the view model has been started, or throw
+     * @throws IllegalStateException    view model not started
+     */
+    private void startedOrThrow() throws IllegalStateException {
+         if (null == mWorkShiftStore) {
+             throw new IllegalStateException(TAG + ": view model not started");
+         }
      }
 }

@@ -29,8 +29,6 @@ Even without the optional requirements, this is a tall set of requirements to im
 As it is, the result still could use a bit of polish:
 
 ## Next Steps
-- persist data between sessions
-    - ponder "saving" active shifts
 - add an application icon
 - change user selection from current full page list of users to a more traditional login window (albeit without password)
     - allow user to register

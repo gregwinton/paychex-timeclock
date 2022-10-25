@@ -45,26 +45,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.gregsprogrammingworks.timeclock.R;
-import com.gregsprogrammingworks.timeclock.model.Employee;
 import com.gregsprogrammingworks.timeclock.model.WorkShift;
-import com.gregsprogrammingworks.timeclock.viewmodel.EmployeeViewModel;
 import com.gregsprogrammingworks.timeclock.viewmodel.WorkShiftViewModel;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class WorkShiftListFragment extends Fragment {
 
@@ -73,8 +64,7 @@ public class WorkShiftListFragment extends Fragment {
     private final String mEmployeeId;
 
     private WorkShiftViewModel mShiftViewModel;
-    private EmployeeViewModel mEmployeeViewModel;
-    private MutableLiveData<List<WorkShift>> mShiftListData;
+    private MutableLiveData<Long> mShiftViewModelLiveData;
 
     private ListView mShiftListView;
     private FloatingActionButton mAddShiftButton;
@@ -87,9 +77,8 @@ public class WorkShiftListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mShiftViewModel = new ViewModelProvider(this).get(WorkShiftViewModel.class);
-        mShiftListData = mShiftViewModel.workShiftsFor(mEmployeeId);
-
-        mEmployeeViewModel = new ViewModelProvider(this).get(EmployeeViewModel.class);
+        mShiftViewModelLiveData = mShiftViewModel.start(getContext());
+        mShiftViewModelLiveData.observe(this, mShiftViewModelObserver);
     }
 
     @Override
@@ -100,26 +89,36 @@ public class WorkShiftListFragment extends Fragment {
         return view;
     }
 
+    /// observer for WorkShift live data
+    private Observer<Long> mShiftViewModelObserver = new Observer<Long>() {
+
+        @Override
+        public void onChanged(Long count) {
+            // Set the employee list view's adapter from the live data
+            refresh();
+        }
+    };
+
     /**
      * Set up our bits of the fragment's view
      * for now, just the employee list view
      * @param view  Fragment "root" view
      */
-    void setupViews(View view) {
+    private void setupViews(View view) {
 
         // Find the employee list view
         mShiftListView = view.findViewById(R.id.WorkShiftListView);
 
-        // Set the employee list view's adapter from the live data
-        ListAdapter listAdapter = makeWorkShiftListAdapter();
-        mShiftListView.setAdapter(listAdapter);
+        // Refresh
+        refresh();
 
         // Set the employee list view's item click listener
         AdapterView.OnItemClickListener shiftListViewOnItemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // Get the employee that was clicked on
-                WorkShift workShift = mShiftListData.getValue().get(position);
+                // Get the employee that was clicked
+                WorkShiftListAdapter adapter = (WorkShiftListAdapter) mShiftListView.getAdapter();
+                WorkShift workShift = adapter.getItem(position);
 
                 // TODO show their timesheet or shift card
                 Fragment fragment = WorkShiftFragment.newInstance(workShift);
@@ -156,12 +155,9 @@ public class WorkShiftListFragment extends Fragment {
      * @return  list adapter
      * @// TODO: 10/23/22 Ponder moving this to ViewModel/Res
      */
-    private ListAdapter makeWorkShiftListAdapter() {
-
-        // Instantiate a simple list array adapter
-        Context ctx = getContext();
-        ListAdapter adapter = new WorkShiftListAdapter(mEmployeeId, ctx);
-
-        return adapter;
+    private void refresh() {
+        // Instantiate the adapter
+        ListAdapter adapter = new WorkShiftListAdapter(mEmployeeId, getContext());
+        mShiftListView.setAdapter(adapter);
     }
 }

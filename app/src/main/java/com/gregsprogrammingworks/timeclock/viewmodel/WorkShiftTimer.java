@@ -33,7 +33,14 @@
 package com.gregsprogrammingworks.timeclock.viewmodel;
 
 // project imports
+import android.content.Context;
+import android.os.Handler;
+
+import androidx.lifecycle.MutableLiveData;
+
 import com.gregsprogrammingworks.timeclock.store.WorkShiftStore;
+
+import java.util.Date;
 
 /**
  * Timer drives updates of active work shifts
@@ -43,17 +50,46 @@ public class WorkShiftTimer {
     /// Singleton instance - only one timer at a time
     private static WorkShiftTimer sInstance;
 
+    private final Context mContext;
+
     /// Timer thread
     private Thread mTimerThread = null;
+
+    /// Live data for observers of the timer
+    private MutableLiveData<Long> mTimeLiveData;
 
     /**
      * Factory method - starts the timer thread if not already started
      */
-    static public void maybeStartThread() {
+    static public MutableLiveData<Long> maybeStartThread(Context context) {
         if (null == sInstance) {
-            sInstance = new WorkShiftTimer();
+            sInstance = new WorkShiftTimer(context);
             sInstance.startTimer();
         }
+
+        MutableLiveData<Long> liveData = sInstance.timeLiveData();
+        return liveData;
+    }
+
+    /**
+     * Private constructor, invoked by class factory method maybeStartTimer()
+     * @param context   Execution context for timer
+     */
+    private WorkShiftTimer(Context context) {
+        mContext = context;
+    }
+
+    /**
+     * Lazy-instantiation of timer live data
+     * @return timer live data
+     */
+    private MutableLiveData<Long> timeLiveData() {
+        if (null == mTimeLiveData) {
+            Long timeInSeconds = new Long(0);
+            mTimeLiveData = new MutableLiveData<>(timeInSeconds);
+        }
+
+        return mTimeLiveData;
     }
 
     /**
@@ -63,23 +99,43 @@ public class WorkShiftTimer {
         mTimerThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                boolean done = false;
-                while (!done) {
+
+                while (true) {
                     try {
-                        // Get the store and and signal any open shifts
-                        WorkShiftStore store = WorkShiftStore.getInstance();
-                        store.signalOpenWorkShifts();
+
+                        // Signal any open shifts
+                        long timeInSeconds = new Date().getTime() / 1000;
+                        updateLiveData(timeInSeconds);
 
                         // Wait a second, then do it again
                         Thread.sleep(1000);
                     }
                     catch (InterruptedException ex) {
-                        done = true;
+                        break;  // Exit while loop
                     }
                 }
                 mTimerThread = null;
             }
         });
         mTimerThread.start();
+    }
+
+    /**
+     * Update the live data and notify observers
+     * @param timeInSeconds new value for live data
+     */
+    private void updateLiveData(long timeInSeconds) {
+        // Get a handler that can be used to post to the main thread
+        Handler mainHandler = new Handler(mContext.getMainLooper());
+
+        // Define the runnable to set label, enable
+        Runnable myRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Signal any open shifts
+                mTimeLiveData.setValue(timeInSeconds);
+            }
+        };
+        mainHandler.post(myRunnable);
     }
 }

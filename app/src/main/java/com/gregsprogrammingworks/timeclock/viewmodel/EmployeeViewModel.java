@@ -33,9 +33,12 @@
 package com.gregsprogrammingworks.timeclock.viewmodel;
 
 // language, os, platform imports
+import android.content.Context;
+
 import java.util.List;
 
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 // project imports
@@ -54,14 +57,29 @@ public class EmployeeViewModel extends ViewModel {
     private EmployeeStore mEmployeeStore;
 
     /// live data list of employees
-    /// @// TODO: 10/24/22 Is the MutableLiveData wrapper necessary and helpful?
     private MutableLiveData<List<Employee>> mEmployeesLiveData;
+
+    /// observer for Employee live data
+    private Observer<List<Employee>> mEmployeeListObserver = new Observer<List<Employee>>() {
+
+        @Override
+        public void onChanged(List<Employee> employeeList) {
+        }
+    };
 
     /**
      * Constructor - initializes employee data store
      */
     public EmployeeViewModel() {
-        mEmployeeStore = new EmployeeStore();
+    }
+
+    /**
+     * Start the view model
+     * @param context   Context in which view model executes
+     */
+    public void start(Context context) {
+        mEmployeeStore = new EmployeeStore(context);
+        mEmployeesLiveData = mEmployeeStore.refreshEmployees();
     }
 
     /**
@@ -70,9 +88,25 @@ public class EmployeeViewModel extends ViewModel {
      * @// TODO: 10/24/22 Is the MutableLiveData wrapper necessary and helpful?
      */
     public MutableLiveData<List<Employee>> getEmployees() {
-        if (null == mEmployeesLiveData) {
-            mEmployeesLiveData = mEmployeeStore.requestEmployees();
-        }
+        startedOrThrow();
         return mEmployeesLiveData;
+    }
+
+    /**
+     * Save a new employee into the system
+     * @param employee  employee to save
+     */
+    public void saveEmployee(Employee employee) {
+        mEmployeeStore.saveEmployee(employee);
+    }
+
+    /**
+     * Verify that the view model has been started, or throw
+     * @throws IllegalStateException    view model not started
+     */
+    private void startedOrThrow() throws IllegalStateException {
+        if (null == mEmployeeStore) {
+            throw new IllegalStateException(TAG + ": view model not started");
+        }
     }
 }

@@ -34,6 +34,7 @@ package com.gregsprogrammingworks.timeclock.common;
 
 // language, os imports
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * A slice of time, from start to end.
@@ -194,5 +195,11 @@ public class TimeSlice {
      */
     public Date getEndDate() {
         return mEndDate;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = Objects.hash(mStartDate, mEndDate);
+        return hash;
     }
 }

@@ -87,8 +87,10 @@ public class WorkShiftFragment extends Fragment {
     /// view model for work shift information
     private WorkShiftViewModel mWorkShiftViewModel;
 
+    /// work shift model live data
+    private MutableLiveData<Long> mWorkShiftViewModelLiveData;
+
     /// work shift live data
-    /// @// TODO: 10/24/22 Ponder whether LiveData wrapper is necessary
     private MutableLiveData<WorkShift> mWorkShiftLiveData;
 
     /// View containing shift, break, lunch buttons
@@ -112,17 +114,11 @@ public class WorkShiftFragment extends Fragment {
 
         // Instantisate the view model
         mWorkShiftViewModel = new ViewModelProvider(this).get(WorkShiftViewModel.class);
-        if (null == mWorkShiftLiveData) {
-            // That worked - get the data we'll want
-            mWorkShiftLiveData = mWorkShiftViewModel.openWorkShiftFor(mEmployeeId);
-            // We'll want to observe the data
-            // for now...
-            mWorkShiftLiveData.observe(this, mWorkShiftObserver);
-        }
-        else {
-            // WorkShift passed to constructor - therefore already complete.
-            // TODO: add explicit support for existing, incomplete work shifts
-        }
+        mWorkShiftViewModelLiveData = mWorkShiftViewModel.start(getContext());
+
+        // We'll want to observe the data
+        // for now...
+        mWorkShiftViewModelLiveData.observe(this, mWorkShiftObserver);
     }
 
     @Override
@@ -157,6 +153,8 @@ public class WorkShiftFragment extends Fragment {
      */
     private WorkShiftFragment(String employeeId) {
         mEmployeeId = employeeId;
+        WorkShift workShift = new WorkShift(employeeId);
+        mWorkShiftLiveData = new MutableLiveData<>(workShift);
     }
 
     /**
@@ -181,8 +179,8 @@ public class WorkShiftFragment extends Fragment {
             else if (workShift.canEndShift()) {
                 workShift.endShift();
                 mWorkShiftLiveData.postValue(workShift);
-                mWorkShiftViewModel.addWorkShift(workShift);
             }
+            mWorkShiftViewModel.saveWorkShift(workShift);
         }
     };
 
@@ -190,15 +188,16 @@ public class WorkShiftFragment extends Fragment {
     private View.OnClickListener mBreakButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            WorkShift workBreak = mWorkShiftLiveData.getValue();
-            if (workBreak.canStartBreak()) {
-                workBreak.startBreak();
-                mWorkShiftLiveData.postValue(workBreak);
+            WorkShift workShift = mWorkShiftLiveData.getValue();
+            if (workShift.canStartBreak()) {
+                workShift.startBreak();
+                mWorkShiftLiveData.postValue(workShift);
             }
-            else if (workBreak.canEndBreak()) {
-                workBreak.endBreak();
-                mWorkShiftLiveData.postValue(workBreak);
+            else if (workShift.canEndBreak()) {
+                workShift.endBreak();
+                mWorkShiftLiveData.postValue(workShift);
             }
+            mWorkShiftViewModel.saveWorkShift(workShift);
         }
     };
 
@@ -206,25 +205,26 @@ public class WorkShiftFragment extends Fragment {
     private View.OnClickListener mLunchButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            WorkShift workLunch = mWorkShiftLiveData.getValue();
-            if (workLunch.canStartLunch()) {
-                workLunch.startLunch();
-                mWorkShiftLiveData.postValue(workLunch);
+            WorkShift workShift = mWorkShiftLiveData.getValue();
+            if (workShift.canStartLunch()) {
+                workShift.startLunch();
+                mWorkShiftLiveData.postValue(workShift);
             }
-            else if (workLunch.canEndLunch()) {
-                workLunch.endLunch();
-                mWorkShiftLiveData.postValue(workLunch);
+            else if (workShift.canEndLunch()) {
+                workShift.endLunch();
+                mWorkShiftLiveData.postValue(workShift);
             }
+            mWorkShiftViewModel.saveWorkShift(workShift);
         }
     };
 
     /// observer for WorkShift live data
     /// @// TODO: 10/24/22 Is LiveData wrapper necessary and/or helpful
-    private Observer<WorkShift> mWorkShiftObserver = new Observer<WorkShift>() {
+    private Observer<Long> mWorkShiftObserver = new Observer<Long>() {
 
         @Override
-        public void onChanged(WorkShift workShift) {
-            refresh(workShift);
+        public void onChanged(Long value) {
+            refresh(mWorkShiftLiveData.getValue());
         }
     };
 
