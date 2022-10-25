@@ -153,6 +153,8 @@ public class WorkShiftFragment extends Fragment {
      */
     private WorkShiftFragment(String employeeId) {
         mEmployeeId = employeeId;
+        WorkShift workShift = new WorkShift(employeeId);
+        mWorkShiftLiveData = new MutableLiveData<>(workShift);
     }
 
     /**

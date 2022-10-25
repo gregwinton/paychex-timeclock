@@ -33,6 +33,8 @@
 package com.gregsprogrammingworks.timeclock.viewmodel;
 
 // language, os, platform imports
+import android.content.Context;
+
 import java.util.List;
 
 import androidx.lifecycle.MutableLiveData;
@@ -54,14 +56,16 @@ public class EmployeeViewModel extends ViewModel {
     private EmployeeStore mEmployeeStore;
 
     /// live data list of employees
-    /// @// TODO: 10/24/22 Is the MutableLiveData wrapper necessary and helpful?
     private MutableLiveData<List<Employee>> mEmployeesLiveData;
 
     /**
      * Constructor - initializes employee data store
      */
     public EmployeeViewModel() {
-        mEmployeeStore = new EmployeeStore();
+    }
+
+    public void start(Context context) {
+        mEmployeeStore = new EmployeeStore(context);
     }
 
     /**
@@ -70,9 +74,16 @@ public class EmployeeViewModel extends ViewModel {
      * @// TODO: 10/24/22 Is the MutableLiveData wrapper necessary and helpful?
      */
     public MutableLiveData<List<Employee>> getEmployees() {
+        startedOrThrow();
         if (null == mEmployeesLiveData) {
             mEmployeesLiveData = mEmployeeStore.requestEmployees();
         }
         return mEmployeesLiveData;
+    }
+
+    private void startedOrThrow() {
+        if (null == mEmployeeStore) {
+            throw new IllegalStateException(TAG + ": view model not started");
+        }
     }
 }

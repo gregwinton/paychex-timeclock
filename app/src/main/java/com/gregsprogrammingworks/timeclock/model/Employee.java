@@ -32,37 +32,49 @@
  * ------------------------------------------------------------------------ */
 package com.gregsprogrammingworks.timeclock.model;
 
+import java.util.Objects;
+import java.util.UUID;
+
 /**
  * Employee model class. In order to use the system, a user
  * *MUST* have an employee record
  */
-public class Employee {
+public class Employee extends BaseModel {
 
     /// Tag for logging and exceptions
     static private final String TAG = Employee.class.getSimpleName();
-
-    /// Unique identifier of employee - read only
-    private final String mEmployeeId;
 
     /// Free-form text employee name - may not be unique and may be edited
     private String mName;
 
     /**
      * Employee constructor with unique employeeId and name
-     * @param employeeId    Employee unique identifier
+     * @param uuid    Employee unique identifier
      * @param name  Employee name
      */
-    public Employee(String employeeId, String name) throws IllegalArgumentException {
+    public Employee(UUID uuid, String name) throws IllegalArgumentException {
 
         // Check employee employeeId
-        ValidIdOrThrow(employeeId);
+        super(uuid);
+
+        ValidIdOrThrow(uuid);
 
         // Check employee name
         ValidNameOrThrow(name);
 
         // If we're still here, they're valid => store them
-        mEmployeeId = employeeId;
         mName = name;
+    }
+
+    public Employee(String name) throws IllegalArgumentException {
+        super();
+        setName(name);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = Objects.hash(getUuid(), getName());
+        return hash;
     }
 
     /**
@@ -70,7 +82,7 @@ public class Employee {
      * @return unique identifier of employee
      */
     public String getEmployeeId() {
-        return mEmployeeId;
+        return getUuid().toString();
     }
 
     /**
@@ -96,21 +108,14 @@ public class Employee {
      * - ids must not be null
      * - ids must not be empty
      * - ids must not contain whitespace
-     * @param employeeId    employee id to check
+     * @param uuid    employee unique id to check
      * @throws IllegalArgumentException if employeeId is invalid
      */
-    private static void ValidIdOrThrow(String employeeId) throws IllegalArgumentException {
+    private static void ValidIdOrThrow(UUID uuid) throws IllegalArgumentException {
         // Can't be null or empty
-        if (null == employeeId || 0 == employeeId.length()) {
+        if (null == uuid) {
             // employeeId is null or empty. Throw an exception
-            throw new IllegalArgumentException(TAG + ": Employee employeeId MUST NOT be null or empty");
-        }
-
-        // There should be no whitespace
-        String deSpacedName = DeSpaceString(employeeId);
-        if (! deSpacedName.equals(employeeId)) {    // Strings should still match
-            // They don't => employeeId has whitespace Throw an exception.
-            throw new IllegalArgumentException(TAG + ": Employee employeeId MUST NOT contain whitespace");
+            throw new IllegalArgumentException(TAG + ": Employee employeeId MUST NOT be null");
         }
     }
 

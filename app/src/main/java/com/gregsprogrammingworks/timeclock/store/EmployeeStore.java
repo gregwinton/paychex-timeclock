@@ -36,7 +36,9 @@ package com.gregsprogrammingworks.timeclock.store;
 // language, os imports
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import android.content.Context;
 import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 
@@ -52,6 +54,13 @@ public class EmployeeStore {
     /// Tag for logging
     private static final String TAG = EmployeeStore.class.getSimpleName();
 
+    private EmployeeDataStore mDataStore;
+
+    public EmployeeStore(Context context) {
+        super();
+        mDataStore = new EmployeeDataStore(context);
+    }
+
     /**
      * Request employees from store
      * @return  employees from store
@@ -59,33 +68,34 @@ public class EmployeeStore {
      */
     public MutableLiveData<List<Employee>> requestEmployees() {
 
-        // Create a canned list of employees
-        // TODO: when we have persistence, gut this, and retrieve from storage
-        List<Employee> employees = new ArrayList<Employee>();
-        maybeAddEmployee(employees, "BENE12345", "Cide H Benengeli");
-        maybeAddEmployee(employees, "PANZ00004", "Sancho Panzes");
-        maybeAddEmployee(employees, "QUIJ00003", "Alonso Quijano");
-        maybeAddEmployee(employees, "TOBO00007", "Dulcinea del Toboso");
+        List<Employee> employeeList = mDataStore.retrieveAll();
+        if (0 == employeeList.size()) {
+            // TODO: when we have persistence, gut this, and retrieve from storage
+            // Create a canned list of employees
+            maybeAddEmployee("Cide H Benengeli");
+            maybeAddEmployee("Sancho Panzes");
+            maybeAddEmployee("Alonso Quijano");
+            maybeAddEmployee("Dulcinea del Toboso");
+            employeeList = mDataStore.retrieveAll();
+        }
 
         // Create a mutable live data around the list and return.
         // TODO: Ponder wither the MutableLiveData is necessary.
-        final MutableLiveData<List<Employee>> employeesData = new MutableLiveData<>(employees);
+        final MutableLiveData<List<Employee>> employeesData = new MutableLiveData<>(employeeList);
         return employeesData;
     }
 
     /**
      * Add an employee to the list, if employee id and name are valid
-     * @param list  List to which to add list
-     * @param employeeId    Unique identifier of employee
      * @param name  Employee name
      */
-    private void maybeAddEmployee(List<Employee> list, String employeeId, String name) {
+    private void maybeAddEmployee(String name) {
         try {
             // Create the employee - will throw if id or name is invalid
-            Employee employee = new Employee(employeeId, name);
+            Employee employee = new Employee(name);
 
-            // If we're here, employee is good. Add it
-            list.add(employee);
+            // Save it in the store
+            mDataStore.save(employee);
         }
         catch (IllegalArgumentException ex) {
             Log.e(TAG, "Exception thrown creating Employee: " + ex.getLocalizedMessage(), ex);

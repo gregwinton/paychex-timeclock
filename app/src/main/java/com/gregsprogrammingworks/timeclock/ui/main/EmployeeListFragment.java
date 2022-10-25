@@ -36,7 +36,6 @@ package com.gregsprogrammingworks.timeclock.ui.main;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,7 +90,7 @@ public class EmployeeListFragment extends Fragment {
 
         // Cache some data
         mEmployeeViewModel = new ViewModelProvider(this).get(EmployeeViewModel.class);
-        mEmployeeListLiveData = mEmployeeViewModel.getEmployees();
+        mEmployeeViewModel.start(getContext());
     }
 
     @Override @Nullable
@@ -126,9 +125,6 @@ public class EmployeeListFragment extends Fragment {
         AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // Cache the context. It just makes the code nicer
-                Context ctx = EmployeeListFragment.this.getContext();
-
                 // Get the employee that was clicked on
                 Employee employee = mEmployeeListLiveData.getValue().get(position);
 
@@ -159,6 +155,10 @@ public class EmployeeListFragment extends Fragment {
          *      haven't followed the latest news on java compilers, i just expect them to do their
          *      best. (gregw, 2022.10.22)
          */
+        if (null == mEmployeeListLiveData) {
+            mEmployeeListLiveData = mEmployeeViewModel.getEmployees();
+        }
+
         // Get the list of employees from the live data.
         List<Employee> employeeList = mEmployeeListLiveData.getValue();
 
@@ -167,12 +167,12 @@ public class EmployeeListFragment extends Fragment {
 
         // Traverse the employee list, add entry "${name} (${id})" to  the employee rows array
         for (Employee employee : employeeList) {
-            String employeeRow = employee.getName() + " (" + employee.getEmployeeId() + ")";
+            String employeeRow = employee.getName();
             adapterList.add(employeeRow);
         }
 
         // Instantiate a simple list array adapter
-        ArrayAdapter<String> employeeListAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> employeeListAdapter = new ArrayAdapter<>(
                 EmployeeListFragment.this.getContext(),
                 android.R.layout.simple_list_item_1,
                 adapterList);

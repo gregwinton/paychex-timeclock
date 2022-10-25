@@ -45,7 +45,7 @@ import java.util.UUID;
 /**
  * WorkShift model class
  */
-public class WorkShift {
+public class WorkShift extends BaseModel {
 
     /// Tag for logging
     private static final String TAG = WorkShift.class.getSimpleName();
@@ -102,11 +102,6 @@ public class WorkShift {
                 mShiftTimeSlice, mBreakTimeSlice, mLunchTimeSlice);
 
         return hash;
-    }
-
-    /// Get accessor for uuid
-    public UUID getUuid() {
-        return mUuid;
     }
 
     /// Get accessor for employee id
