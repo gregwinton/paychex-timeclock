@@ -39,6 +39,7 @@ package com.gregsprogrammingworks.timeclock.model;
 // project imports
 import com.gregsprogrammingworks.timeclock.common.TimeSlice;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -93,6 +94,14 @@ public class WorkShift {
         mShiftTimeSlice = shiftSlice;
         mBreakTimeSlice = breakSlice;
         mLunchTimeSlice = lunchSlice;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = Objects.hash(mUuid, mEmployeeId,
+                mShiftTimeSlice, mBreakTimeSlice, mLunchTimeSlice);
+
+        return hash;
     }
 
     /// Get accessor for uuid

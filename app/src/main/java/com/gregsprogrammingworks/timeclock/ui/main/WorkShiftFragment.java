@@ -87,8 +87,10 @@ public class WorkShiftFragment extends Fragment {
     /// view model for work shift information
     private WorkShiftViewModel mWorkShiftViewModel;
 
+    /// work shift model live data
+    private MutableLiveData<Long> mWorkShiftViewModelLiveData;
+
     /// work shift live data
-    /// @// TODO: 10/24/22 Ponder whether LiveData wrapper is necessary
     private MutableLiveData<WorkShift> mWorkShiftLiveData;
 
     /// View containing shift, break, lunch buttons
@@ -112,15 +114,11 @@ public class WorkShiftFragment extends Fragment {
 
         // Instantisate the view model
         mWorkShiftViewModel = new ViewModelProvider(this).get(WorkShiftViewModel.class);
-        mWorkShiftViewModel.start(getContext());
-        if (null == mWorkShiftLiveData) {
-            // That worked - get the data we'll want
-            mWorkShiftLiveData = mWorkShiftViewModel.openWorkShiftFor(mEmployeeId);
-        }
+        mWorkShiftViewModelLiveData = mWorkShiftViewModel.start(getContext());
 
         // We'll want to observe the data
         // for now...
-        mWorkShiftLiveData.observe(this, mWorkShiftObserver);
+        mWorkShiftViewModelLiveData.observe(this, mWorkShiftObserver);
     }
 
     @Override
@@ -220,11 +218,11 @@ public class WorkShiftFragment extends Fragment {
 
     /// observer for WorkShift live data
     /// @// TODO: 10/24/22 Is LiveData wrapper necessary and/or helpful
-    private Observer<WorkShift> mWorkShiftObserver = new Observer<WorkShift>() {
+    private Observer<Long> mWorkShiftObserver = new Observer<Long>() {
 
         @Override
-        public void onChanged(WorkShift workShift) {
-            refresh(workShift);
+        public void onChanged(Long value) {
+            refresh(mWorkShiftLiveData.getValue());
         }
     };
 

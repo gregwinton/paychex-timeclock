@@ -34,6 +34,7 @@ package com.gregsprogrammingworks.timeclock.viewmodel;
 
 // language, os, platform imports
 import android.content.Context;
+import android.util.Log;
 
 import java.util.List;
 
@@ -41,6 +42,7 @@ import com.gregsprogrammingworks.timeclock.model.WorkShift;
 import com.gregsprogrammingworks.timeclock.store.WorkShiftStore;
 
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 
@@ -56,6 +58,7 @@ public class WorkShiftViewModel extends ViewModel {
 
     /// Work shift store
     private WorkShiftStore mWorkShiftStore;
+    private MutableLiveData<Long> mTimerLiveData;
 
     /**
      * Constructor for work shift view model.
@@ -63,10 +66,11 @@ public class WorkShiftViewModel extends ViewModel {
     public WorkShiftViewModel() {
     }
 
-    public void start(Context context) {
+    public MutableLiveData<Long> start(Context context) {
         mWorkShiftStore = new WorkShiftStore(context);
         // Start the work shift update thread
-        WorkShiftTimer.maybeStartThread(context);
+        mTimerLiveData = WorkShiftTimer.maybeStartThread(context);
+        return mTimerLiveData;
     }
 
     /**

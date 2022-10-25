@@ -59,8 +59,7 @@ public class WorkShiftStore {
     private final WorkShiftDataStore mDataStore;
 
     /// Employee to active time sheets mapping
-    /// @// TODO: 10/24/22 Consider removing this, and add active work shifts to store
-    private Map<String, MutableLiveData<WorkShift>> mOpenWorkShifts;
+    private List<MutableLiveData<WorkShift>> mOpenWorkShifts;
 
     /// Lists of shifts per employee
     private Map<String, MutableLiveData<List<WorkShift>>> mWorkShiftsByEmployee;
@@ -69,19 +68,6 @@ public class WorkShiftStore {
         mContext = context;
         mDataStore = new WorkShiftDataStore(mContext);
         reloadMaps();
-    }
-
-    /**
-     * Notify active workshifts of a change
-     * @// TODO: 10/24/22 ponder moving to WorkShiftViewModel
-     */
-    public void signalOpenWorkShifts() {
-        Set<String> keySet = mOpenWorkShifts.keySet();
-        for (String key : keySet) {
-            MutableLiveData<WorkShift> liveData = mOpenWorkShifts.get(key);
-            WorkShift shift = liveData.getValue();
-            liveData.postValue(shift);
-        }
     }
 
     /**
@@ -101,17 +87,21 @@ public class WorkShiftStore {
      * Get an open work shift for the employee, creating one if none are open
      * @param employeeId    employee for whom to create work shift
      * @return  Work shift for employee
-     * @// TODO: 10/24/22 Ponder whether the MutableLiveData template is necessary
      */
     public MutableLiveData<WorkShift> openWorkShiftFor(String employeeId) {
 
         // Get the work shift from open shift store
-        MutableLiveData<WorkShift> shiftData = mOpenWorkShifts.get(employeeId);
-        if (null == shiftData) {
-            WorkShift workShift = new WorkShift(employeeId);
-            shiftData = new MutableLiveData<>(workShift);
-            mOpenWorkShifts.put(employeeId, shiftData);
+        for (MutableLiveData<WorkShift> data : mOpenWorkShifts) {
+            if (data.getValue().getEmployeeId().equals(employeeId)) {
+                return data;
+            }
         }
+
+        // If we're here, there's not one for the employee
+        WorkShift workShift = new WorkShift(employeeId);
+        MutableLiveData<WorkShift> shiftData = new MutableLiveData<>(workShift);
+        mOpenWorkShifts.add(shiftData);
+
         return shiftData;
     }
 
@@ -136,7 +126,7 @@ public class WorkShiftStore {
     private void reloadMaps() {
         List<WorkShift> shiftList = mDataStore.retrieveAll();
         mWorkShiftsByEmployee = new HashMap<>();
-        mOpenWorkShifts = new HashMap<>();
+        mOpenWorkShifts = new ArrayList<>();
 
         for (WorkShift shift : shiftList) {
             addShiftToMaps(shift);
@@ -162,7 +152,7 @@ public class WorkShiftStore {
         // TODO: Make this a lot prettier... maybe Workshift.IsComplete()
         if (! shift.getShiftTimeSlice().isComplete()) {
             MutableLiveData<WorkShift> shiftData = new MutableLiveData<>(shift);
-            mOpenWorkShifts.put(employeeId, shiftData);
+            mOpenWorkShifts.add(shiftData);
         }
     }
 
