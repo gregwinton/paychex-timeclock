@@ -76,9 +76,14 @@ public class EmployeeViewModel extends ViewModel {
     public MutableLiveData<List<Employee>> getEmployees() {
         startedOrThrow();
         if (null == mEmployeesLiveData) {
-            mEmployeesLiveData = mEmployeeStore.requestEmployees();
+            mEmployeesLiveData = mEmployeeStore.refreshEmployees();
         }
         return mEmployeesLiveData;
+    }
+
+    public void saveEmployee(Employee employee) {
+        mEmployeeStore.saveEmployee(employee);
+        mEmployeesLiveData = null;
     }
 
     private void startedOrThrow() {

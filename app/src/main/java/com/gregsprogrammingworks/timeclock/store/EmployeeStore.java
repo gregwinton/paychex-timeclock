@@ -55,10 +55,12 @@ public class EmployeeStore {
     private static final String TAG = EmployeeStore.class.getSimpleName();
 
     private EmployeeDataStore mDataStore;
+    private MutableLiveData<List<Employee>> mEmployeeListData;
 
     public EmployeeStore(Context context) {
         super();
         mDataStore = new EmployeeDataStore(context);
+        mEmployeeListData = new MutableLiveData<>();
     }
 
     /**
@@ -66,23 +68,28 @@ public class EmployeeStore {
      * @return  employees from store
      * @// TODO: 10/24/22 consider removing MutableLiveData template from return value
      */
-    public MutableLiveData<List<Employee>> requestEmployees() {
+    public MutableLiveData<List<Employee>> refreshEmployees() {
 
         List<Employee> employeeList = mDataStore.retrieveAll();
-        if (0 == employeeList.size()) {
-            // TODO: when we have persistence, gut this, and retrieve from storage
-            // Create a canned list of employees
-            maybeAddEmployee("Cide H Benengeli");
-            maybeAddEmployee("Sancho Panzes");
-            maybeAddEmployee("Alonso Quijano");
-            maybeAddEmployee("Dulcinea del Toboso");
-            employeeList = mDataStore.retrieveAll();
-        }
+//        if (0 == employeeList.size()) {
+//            // TODO: when we have persistence, gut this, and retrieve from storage
+//            // Create a canned list of employees
+//            maybeAddEmployee("Cide H Benengeli");
+//            maybeAddEmployee("Sancho Panzes");
+//            maybeAddEmployee("Alonso Quijano");
+//            maybeAddEmployee("Dulcinea del Toboso");
+//            employeeList = mDataStore.retrieveAll();
+//        }
 
         // Create a mutable live data around the list and return.
-        // TODO: Ponder wither the MutableLiveData is necessary.
-        final MutableLiveData<List<Employee>> employeesData = new MutableLiveData<>(employeeList);
-        return employeesData;
+        mEmployeeListData.setValue(employeeList);
+
+        return mEmployeeListData;
+    }
+
+    public void saveEmployee(Employee employee) {
+        mDataStore.save(employee);
+        refreshEmployees();
     }
 
     /**
