@@ -44,14 +44,12 @@ import java.util.UUID;
 
 /**
  * WorkShift model class
+ * @// TODO: 10/25/22 Pass employee id as a uuid, not string
  */
 public class WorkShift extends BaseModel {
 
     /// Tag for logging
     private static final String TAG = WorkShift.class.getSimpleName();
-
-    /// Unique id of shift instance
-    private final UUID mUuid;
 
     /// Id of employee working shift
     private final String mEmployeeId;
@@ -70,8 +68,7 @@ public class WorkShift extends BaseModel {
      * @param employeeId    Employee for whom to create work shift
      */
     public WorkShift(String employeeId) {
-        this(UUID.randomUUID(),
-                employeeId,
+        this(employeeId,
                 new TimeSlice(),
                 new TimeSlice(),
                 new TimeSlice());
@@ -89,7 +86,24 @@ public class WorkShift extends BaseModel {
                      TimeSlice shiftSlice,
                      TimeSlice breakSlice,
                      TimeSlice lunchSlice) {
-        mUuid = uuid;
+        super(uuid);
+        mEmployeeId = employeeId;
+        mShiftTimeSlice = shiftSlice;
+        mBreakTimeSlice = breakSlice;
+        mLunchTimeSlice = lunchSlice;
+    }
+    /**
+     * Constructor creates a work shift from existing data
+     * @param employeeId    Employee for whom to create work shift
+     * @param shiftSlice    Overall shift start, stop date/times
+     * @param breakSlice    Break start, stop date/times, if any
+     * @param lunchSlice    Lunch start, stop date/times, if any
+     */
+    public WorkShift(String employeeId,
+                     TimeSlice shiftSlice,
+                     TimeSlice breakSlice,
+                     TimeSlice lunchSlice) {
+        super();
         mEmployeeId = employeeId;
         mShiftTimeSlice = shiftSlice;
         mBreakTimeSlice = breakSlice;
@@ -120,7 +134,7 @@ public class WorkShift extends BaseModel {
 
     /**
      *  Can the shift can be started
-     *  @returns true if not started, or false if active or complete
+     *  @return true if not started, or false if active or complete
      */
     public boolean canStartShift() {
         // Really only care if it's been started
@@ -130,7 +144,7 @@ public class WorkShift extends BaseModel {
 
     /**
      *  Can the shift can be ended
-     *  @returns true if started and not complete and neither break nor lunch is active, or false
+     *  @return true if started and not complete and neither break nor lunch is active, or false
      */
     public boolean canEndShift() {
         boolean retval = true;
@@ -177,7 +191,7 @@ public class WorkShift extends BaseModel {
 
     /**
      *  Can a break can be started
-     *  @returns true if shift is active, lunch is not active, and break not started; or false
+     *  @return true if shift is active, lunch is not active, and break not started; or false
      */
     public boolean canStartBreak() {
         boolean retval = true;
@@ -203,7 +217,7 @@ public class WorkShift extends BaseModel {
 
     /**
      *  Can a break can be ended
-     *  @returns true break is active, or false
+     *  @return true break is active, or false
      */
     public boolean canEndBreak() {
 
@@ -240,7 +254,7 @@ public class WorkShift extends BaseModel {
 
     /**
      *  Can lunch can be started
-     *  @returns true if shift is active, break is not active, and lunch not started; or false
+     *  @return true if shift is active, break is not active, and lunch not started; or false
      */
     public boolean canStartLunch() {
         boolean retval = true;
@@ -265,7 +279,7 @@ public class WorkShift extends BaseModel {
 
     /**
      *  Can a lunch can be ended
-     *  @returns true lunch is active, or false
+     *  @return true lunch is active, or false
      */
     public boolean canEndLunch() {
         boolean outToLunch = mLunchTimeSlice.isActive();
@@ -301,8 +315,9 @@ public class WorkShift extends BaseModel {
 
     @Override
     public int hashCode() {
-        int hash = Objects.hash(mUuid, mEmployeeId,
-                mShiftTimeSlice, mBreakTimeSlice, mLunchTimeSlice);
+        int hash = Objects.hash(getUuid(),
+                mEmployeeId, mShiftTimeSlice,
+                mBreakTimeSlice, mLunchTimeSlice);
 
         return hash;
     }

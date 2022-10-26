@@ -39,9 +39,5 @@ As it is, the result still could use a bit of polish:
     - not sure all are necessary.
 
 ## Known Issues
-- Employee WorkShift List elapsed time for shift does not stop or account for break, lunch.
-    - Simple Fix: Use "net time" instead of "total time". That may require change to Adapter <- change WorkShiftListItem
-- Active work shift does not appear in employee work shift list. 
-    - Tapping "add" button brings up active work shift, if there is one.
 - Date display on WorkShift fragment - be smarter about date inclusion, don't need it for every date/time.
 

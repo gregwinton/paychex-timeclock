@@ -50,10 +50,15 @@ import com.gregsprogrammingworks.timeclock.R;
 /**
  * Adapter presents shift, break, or lunch time slice for a work shift
  */
-public class WorkShiftTimeSliceAdapter extends ArrayAdapter<WorkShiftTimeSliceData> {
+class WorkShiftTimeSliceAdapter extends ArrayAdapter<WorkShiftTimeSliceData> {
 
     /// Tag for logging
     private static final String TAG = WorkShiftTimeSliceAdapter.class.getSimpleName();
+
+    private static final String kShiftLabel = "Shift";
+    private static final String kBreakLabel = "Break";
+    private static final String kLunchLabel = "Lunch";
+    private static final String kTotalLabel = "Total";
 
     /// WorkShift live data
     private final MutableLiveData<WorkShift> mWorkShiftLiveData;
@@ -98,8 +103,16 @@ public class WorkShiftTimeSliceAdapter extends ArrayAdapter<WorkShiftTimeSliceDa
         WorkShiftTimeSliceData data = getItem(position);
 
         // Set the info in the row.
-        row.setTimeSlice(data.getSliceLabel(), data.getTimeSlice());
-
+        String label = data.getSliceLabel();
+        row.setBold(false);
+        row.setTimeSlice(label, data.getTimeSlice());
+        if (kShiftLabel.equals(label)) {
+            WorkShift workShift = mWorkShiftLiveData.getValue();
+            row.setElapsedSeconds(workShift.onTheClockSeconds());
+        }
+        else if (kTotalLabel.equals(label)) {
+            row.setBold(true);
+        }
         // Return the completed view to render on screen
         return rowView;
     }
@@ -110,9 +123,12 @@ public class WorkShiftTimeSliceAdapter extends ArrayAdapter<WorkShiftTimeSliceDa
     public void refresh() {
         clear();
         WorkShift workShift = mWorkShiftLiveData.getValue();
-        maybeAddSlice("Shift", workShift.getShiftTimeSlice());
-        maybeAddSlice("Break", workShift.getBreakTimeSlice());
-        maybeAddSlice("Lunch", workShift.getLunchTimeSlice());
+        maybeAddSlice(kShiftLabel, workShift.getShiftTimeSlice());
+        maybeAddSlice(kBreakLabel, workShift.getBreakTimeSlice());
+        maybeAddSlice(kLunchLabel, workShift.getLunchTimeSlice());
+        if (1 < super.getCount()) {
+            maybeAddSlice(kTotalLabel, workShift.getShiftTimeSlice());
+        }
     }
 
     /**

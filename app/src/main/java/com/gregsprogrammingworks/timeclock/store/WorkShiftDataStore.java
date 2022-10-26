@@ -99,8 +99,8 @@ class WorkShiftDataStore {
      * @param workshift workshift to save
      */
     void save(WorkShift workshift) {
-        String jsonStr = shiftToJsonStr(workshift);
         String shiftKey = workshift.getUuid().toString();
+        String jsonStr = shiftToJsonStr(workshift);
         mDataStore.put(shiftKey, jsonStr);
     }
 
@@ -216,6 +216,7 @@ class WorkShiftDataStore {
      * @param startMillis   start time in millis
      * @param endMillis     end time in millis
      * @return timeslice for start, end
+     * @// TODO: 10/25/22 This really belongs in the TimeSlice class.
      */
     private static TimeSlice sliceFor(long startMillis, long endMillis) {
         Date startDate = new Date(startMillis);

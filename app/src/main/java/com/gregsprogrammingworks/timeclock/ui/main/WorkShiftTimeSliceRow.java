@@ -35,6 +35,7 @@ package com.gregsprogrammingworks.timeclock.ui.main;
 // language, os, platform imports
 import java.util.Date;
 
+import android.graphics.Typeface;
 import android.view.View;
 import android.widget.TextView;
 
@@ -73,6 +74,13 @@ public class WorkShiftTimeSliceRow {
         mElapsedText = view.findViewById(R.id.ElapsedTime);
     }
 
+    void setBold(boolean bold) {
+        int typeface = bold ? Typeface.BOLD : Typeface.NORMAL;
+        mLabelText.setTypeface(null, typeface);
+        mStartText.setTypeface(null, typeface);
+        mElapsedText.setTypeface(null, typeface);
+        mElapsedText.setTypeface(null, typeface);
+    }
     /**
      * Set the view values from a label and time slice
      * @param label label to set

@@ -46,7 +46,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import androidx.fragment.app.FragmentManager;
@@ -221,34 +220,59 @@ public class EmployeeListFragment extends Fragment {
         mEmployeeListView.setAdapter(employeeListAdapter);
     }
 
+    /**
+     * Dialog to add new or edit existing employee
+     */
     private class EmployeeAddEditDialog {
 
+        /// "Our" custom view
         private View mView;
+
+        /// Employee name edit control - in view
         private EditText mNameEdit;
+
+        /// our dialog leverages AlertDialog
         private AlertDialog.Builder mAlertBuilder;
 
+        /**
+         * Constructor
+         * @param context execution context
+         */
         EmployeeAddEditDialog(Context context) {
             // It's a new view - inflate the view
             LayoutInflater inflater = LayoutInflater.from(context);
             mView = inflater.inflate(R.layout.dialog_add_edit_employee_layout, null, false);
             mNameEdit = mView.findViewById(R.id.NameEdit);
 
+            // Build the alert dialog around the view
             mAlertBuilder = new AlertDialog.Builder(context);
             mAlertBuilder.setTitle("Add Employee");
             mAlertBuilder.setView(mView);
             mAlertBuilder.setPositiveButton("Save", mSaveButtonOnClickListener);
         }
 
+        /**
+         * Show the alert
+         */
         void show() {
             mAlertBuilder.show();
         }
 
+        /// Item click handler for save button
         private DialogInterface.OnClickListener mSaveButtonOnClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                // TODO: Error checking? Would be nice to enable save button only when name is "valid"
+                // Get the name
                 String name = mNameEdit.getText().toString();
+                // TODO: Will need to be more sophisticated (less brute force) when we add edit
+                // Create and save new employee
                 Employee employee = new Employee(name);
                 mEmployeeViewModel.saveEmployee(employee);
+                // TODO: Refreshing the list via EmployeeListFragment is unfortunately coupled
+                //       Instead, have EmployeeListFragment be notified by update of employee
+                //       list in the data model. But not now. (gregw, 2022.10.25)
+                // Refresh the list
                 EmployeeListFragment.this.refresh();
             }
         };

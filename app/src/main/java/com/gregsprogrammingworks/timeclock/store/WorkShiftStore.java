@@ -35,7 +35,6 @@ package com.gregsprogrammingworks.timeclock.store;
 
 import android.content.Context;
 
-import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.gregsprogrammingworks.timeclock.common.TimeSlice;
@@ -43,11 +42,9 @@ import com.gregsprogrammingworks.timeclock.model.WorkShift;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 public class WorkShiftStore {
@@ -55,7 +52,10 @@ public class WorkShiftStore {
     /// Tag for logging
     private static final String TAG = WorkShiftStore.class.getSimpleName();
 
+    /// Execution/environment context
     private final Context mContext;
+
+    /// Work shift "physical" data store
     private final WorkShiftDataStore mDataStore;
 
     /// Employee to active time sheets mapping
@@ -75,10 +75,8 @@ public class WorkShiftStore {
      * @param workShift Work Shift to save
      */
     public void saveWorkShift(WorkShift workShift) throws IllegalStateException {
-
         // Save the workshift
         mDataStore.save(workShift);
-
         // Refresh
         reloadMaps();
     }
@@ -90,10 +88,28 @@ public class WorkShiftStore {
      */
     public MutableLiveData<WorkShift> openWorkShiftFor(String employeeId) {
 
+        /* NB:  This is super inefficient - consider adding logic to travers
+         *      the map looking for open shifts? That doesn't actually, sound
+         *      all that much more efficient. Really, we are getting close to
+         *      a need for sql:
+         *
+         *          select *
+         *          from workshifts
+         *          where shiftStart != nil && shiftEnd == nil
+         *
+         *  But for now, this will have to do, big O of N as it is. (gregw, 2022.10.25)
+         */
+
         // Get the work shift from open shift store
         for (MutableLiveData<WorkShift> data : mOpenWorkShifts) {
-            if (data.getValue().getEmployeeId().equals(employeeId)) {
-                return data;
+            // Get workShift - probably not null, but belt & suspenders
+            WorkShift workShift = data.getValue();
+            if (null != workShift) {
+                // Not null - is it the one we want?
+                if (employeeId.equals(workShift.getEmployeeId())) {
+                    // Yep - return it
+                    return data;
+                }
             }
         }
 
