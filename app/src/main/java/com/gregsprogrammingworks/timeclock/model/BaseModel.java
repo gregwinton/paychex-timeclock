@@ -38,7 +38,10 @@ import java.util.UUID;
 /**
  * Base model class - manages object id
  */
-public class BaseModel {
+class BaseModel {
+
+    /// Tag for logging & exceptions
+    private static final String TAG = BaseModel.class.getSimpleName();
 
     /// Unique id of shift instance
     private final UUID mUuid;
@@ -54,6 +57,7 @@ public class BaseModel {
      */
     protected BaseModel(UUID uuid) {
         super();
+        ValidIdOrThrow(uuid);
         mUuid = uuid;
     }
 
@@ -63,5 +67,19 @@ public class BaseModel {
     protected BaseModel() {
         // Generate a uuid and call parameterized constructor
         this(UUID.randomUUID());
+    }
+
+    /**
+     * Check an id value, and throw an error if its invalid.
+     * - ids must be a valid UUID
+     * @param uuid    id to check
+     * @throws IllegalArgumentException if uuid is invalid
+     */
+    private static void ValidIdOrThrow(UUID uuid) throws IllegalArgumentException {
+        // Can't be null or empty
+        if (null == uuid) {
+            // employeeId is null or empty. Throw an exception
+            throw new IllegalArgumentException(TAG + ": uuid MUST NOT be null");
+        }
     }
 }

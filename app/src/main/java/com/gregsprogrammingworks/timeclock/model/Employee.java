@@ -55,12 +55,11 @@ public class Employee extends BaseModel {
      */
     public Employee(UUID uuid, String name) throws IllegalArgumentException {
 
-        // Check employee employeeId
+        // Have to call super first
+        // (super will validate uuid)
         super(uuid);
 
-        ValidIdOrThrow(uuid);
-
-        // Check employee name
+        // Validate employee name
         ValidNameOrThrow(name);
 
         // If we're still here, they're valid => store them
@@ -108,23 +107,6 @@ public class Employee extends BaseModel {
         int hash = Objects.hash(getUuid(), getName());
         return hash;
     }
-
-    /**
-     * Check an employee id value, and throw an error if its invalid.
-     * - ids must not be null
-     * - ids must not be empty
-     * - ids must not contain whitespace
-     * @param uuid    employee unique id to check
-     * @throws IllegalArgumentException if employeeId is invalid
-     */
-    private static void ValidIdOrThrow(UUID uuid) throws IllegalArgumentException {
-        // Can't be null or empty
-        if (null == uuid) {
-            // employeeId is null or empty. Throw an exception
-            throw new IllegalArgumentException(TAG + ": Employee employeeId MUST NOT be null");
-        }
-    }
-
     /**
      * Check an name value, and throw an error if its invalid.
      * - names must not be null

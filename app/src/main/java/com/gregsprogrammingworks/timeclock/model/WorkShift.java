@@ -44,6 +44,7 @@ import java.util.UUID;
 
 /**
  * WorkShift model class
+ * @// TODO: 10/25/22 Pass employee id as a uuid, not string
  */
 public class WorkShift extends BaseModel {
 
@@ -67,8 +68,7 @@ public class WorkShift extends BaseModel {
      * @param employeeId    Employee for whom to create work shift
      */
     public WorkShift(String employeeId) {
-        this(UUID.randomUUID(),
-                employeeId,
+        this(employeeId,
                 new TimeSlice(),
                 new TimeSlice(),
                 new TimeSlice());
@@ -87,6 +87,23 @@ public class WorkShift extends BaseModel {
                      TimeSlice breakSlice,
                      TimeSlice lunchSlice) {
         super(uuid);
+        mEmployeeId = employeeId;
+        mShiftTimeSlice = shiftSlice;
+        mBreakTimeSlice = breakSlice;
+        mLunchTimeSlice = lunchSlice;
+    }
+    /**
+     * Constructor creates a work shift from existing data
+     * @param employeeId    Employee for whom to create work shift
+     * @param shiftSlice    Overall shift start, stop date/times
+     * @param breakSlice    Break start, stop date/times, if any
+     * @param lunchSlice    Lunch start, stop date/times, if any
+     */
+    public WorkShift(String employeeId,
+                     TimeSlice shiftSlice,
+                     TimeSlice breakSlice,
+                     TimeSlice lunchSlice) {
+        super();
         mEmployeeId = employeeId;
         mShiftTimeSlice = shiftSlice;
         mBreakTimeSlice = breakSlice;
