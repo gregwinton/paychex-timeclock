@@ -1,4 +1,4 @@
-# paychex-timeclock
+# sample-time-clock
 
 Projects fullfills the requirements as set forth in the Interview Candidate Project.pdf, and copied here:
 
@@ -40,4 +40,3 @@ As it is, the result still could use a bit of polish:
 
 ## Known Issues
 - Date display on WorkShift fragment - be smarter about date inclusion, don't need it for every date/time.
-
