@@ -105,7 +105,7 @@ Starting with the user stories;
 We will start with a Model-View-ViewModel-Store architecture, which adds a layer to the traditional MVVM which abstracts the persistent
 storage of Model data.
 
-### Model
+### Model (First Pass)
 From the user stories, we see two main objects emerge, the Employee and the WorkShift. 
 
 #### Employee
@@ -137,8 +137,11 @@ WorkShift {
 ```
 again, with appropriate accessors.
 
-#### BaseModel
+### Model (Second Pass)
+
 As we begin to implement this model, we find ourselves repeating code both across the Employee and WorkShift class, and within the Workshift class.
+
+#### BaseModel
 Since both `Employee` and `WorkShift` classes use a `Guid` as a unique id, the code that manages this id can be extracted into a common base class, which
 for lack of a better term has been called `BaseModel` here:
 ```
@@ -147,6 +150,7 @@ BaseModel {
 }
 ```
 with only the id get accessor publicly available. There is only a protected constructor method, so only derived classes can be instantiated.
+Both `Employee` and `WorkShift` will derive from `BaseModel`, and so inherit its common unique id management.
 
 #### TimeSlice
 Within the `WorkShift` class, we find ourselves writing duplicate code to managing the elapsed times of shifts, breaks, and lunches. 
@@ -162,26 +166,19 @@ as well as accessor methods, including those that indicate the _state_ of the `T
 - If `start` is not `nil` and `end` is `nil, the slice is **active**
 - If `start` and `end` are both not `nil`, the slice is **complete**
 
-#### Final Class Descriptions
-```
-BaseModel {
-    id: Guid
-}
-```
+We will use instances of this class to represent shift, break, and lunch times.
 
+#### Employee
+With the extraction of unique id handling to `BaseModel`, the `Employee` class is reduced to managing only the employee's name:
 ```
 Employee : BaseModel {
     name: string
 }
 ```
 
-```
-TimeSlice {
-    start: DateTime
-    end: DateTime
-}
-```
-
+#### WorkShift
+The WorkShift object is even more simplified, with `BaseModel` handling unique id management, and `TimeSlice` handling the details of elapsed
+shift, break, and lunch times.
 ```
 WorkShift : BaseModel {
     shift: TimeSlice
@@ -189,6 +186,17 @@ WorkShift : BaseModel {
     lunch: TimeSlice
 }
 ```
+The `WorkShift` object does manage higher level calculations, like net shift time (which is total shift time less break and lunch times).
+
+## Running the Application
+Unfortunately there is no easy way to run this application short of building it. To wit:
+1. Download and install the [Android Developer Studio](https://developer.android.com/studio)
+1. Get the code. Either:
+    1. Clone this repository: `git clone git@github.com:gregwinton/sample-time-clock.git`
+    1. Or [download an archive](https://github.com/gregwinton/sample-time-clock/archive/refs/heads/main.zip) of the code and unzip it.
+1. Open the project in the afore-installed Android Developer Studio
+1. Run the result on your device or, if you are truly brave (or desparate), in the emulator
+
 
 ## Next Steps
 As it is, the result still could use a bit of polish:
@@ -204,10 +212,3 @@ As it is, the result still could use a bit of polish:
 
 ## Known Issues
 - Date display on WorkShift fragment - be smarter about date inclusion, don't need it for every date/time.
-
-## Running the Application
-Unfortunately there is no easy way to run this application short of building it. To wit:
-1. Download and install the [Android Developer Studio] (https://developer.android.com/studio)
-1. Clone this repository: `git clone git@github.com:gregwinton/sample-time-clock.git`
-1. Open the project in the afore-installed Android Developer Studio
-1. Run the result on your device or, if you are truly brave (or desparate), in the emulator
