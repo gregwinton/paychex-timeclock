@@ -100,6 +100,11 @@ Starting with the user stories;
     - **Post-Condition** My shift is stopped
         - STC stops accruing Shift Time
 
+- As an Employee, I want to review my WorkShifts
+    - **Pre-Condition** I am the active employee
+    - I ask STC to show me my workshifts, past and present
+    - STC shows me my shifts, past and present
+
 ## Design
 
 We will start with a Model-View-ViewModel-Store architecture, which adds a layer to the traditional MVVM which abstracts the persistent
@@ -187,6 +192,30 @@ WorkShift : BaseModel {
 }
 ```
 The `WorkShift` object does manage higher level calculations, like net shift time (which is total shift time less break and lunch times).
+
+### User Interface
+The application **MUST** allow the user to select themselves as the current employee, and then allow them to view existing WorkShifts and
+start new-ones, and then take a break and lunch during the shift, all according to the rules above.
+
+#### Authentication/User Selection
+The first screen, therefore, is a user authentication screen. As there are no requirements for any sort of security, we will simply present a list of
+existing employees and allow the user to select themselves from the list. A future enhancement would be to add real authentication or even the ability
+to add and remove users, but those require implementation of admin features we have decided, for now, to postpone.
+
+For now, we will provide a canned list of employees from which the user can select.
+
+#### Employee History (WorkShift List) Screen
+Shows a list of all shifts worked by the employee. For each shift, shows:
+- start time of shift
+- end time of shift (updated if still active)
+- total elapsed time of shift
+- net elapsed time of shift (total less break plus lunch)
+
+#### Work Shift Detail Screen
+Shows the details of a work shift:
+- start and end time
+- break start and end time (if any)
+- lunch start and end time (if any)
 
 ## Running the Application
 Unfortunately there is no easy way to run this application short of building it. To wit:
