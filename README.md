@@ -21,15 +21,15 @@ _Create an application that represents a simple time clock. You are free to use 
 The application must follow the requirements listed below._
 
 1. Allow user to be identified using a unique ID assigned to each employee.
-    1. Users that cannot be identified should not be able to use the application.
+    - Users that cannot be identified should not be able to use the application.
 1. Allow users to start a work shift.
-    1. Do not allow users to start multiple shifts simultaneously.
+    - Do not allow users to start multiple shifts simultaneously.
 1. Allow users to end a work shift.
-    1. Do not allow users to start a shift during an active shift.
+    - Do not allow users to start a shift during an active shift.
 1. Allow users to start/end a break, but only during an active shift. 
-    1. Do not allow employees to end a shift if a break is active.
+    - Do not allow employees to end a shift if a break is active.
 1. Allow users to start/end a lunch, but only during an active shift.
-    1. Do not allow employees to end a shift if a lunch is active.
+    - Do not allow employees to end a shift if a lunch is active.
 1. All shift data performed by users should be recorded and made available upon returning to the application.
 1. (Optional) Allow new users to register themselves in the application.
 1. (Optional) Allow for two types of users in the application; administrators and non-
@@ -39,7 +39,7 @@ stated previously.
     - [GW] Need greater clarification on this rule. What is expected behavior in each case?
 1. (Optional) Allow administrators to view a summary report section that summarizes all the
 employee’s shift activity.
-    1. (Optional) Allow administrators to filter the report data.
+    - (Optional) Allow administrators to filter the report data.
 
 ## Analysis
 
@@ -78,6 +78,20 @@ Starting with the user stories;
         - STC stops accruing Shift Time
         - STC begins accruing Lunch Time  
 
+- As an Employee, I want to end a break
+    - **Pre-Condition** I am on break
+    - I tell STC I am done with my break
+    - **Post-Condition** I am off break
+        - STC resumes accruing Shift Time
+        - STC stops accruing Break Time  
+
+- As an Employee, I want to end my lunch
+    - **Pre-Condition** I am at lunch
+    - I tell STC I am done with my lunch
+    - **Post-Condition** I am off lunch
+        - STC resumes accruing Shift Time
+        - STC stops accruing Lunch Time  
+
 - As an Employee, I want to end a shift
     - **Pre-Condition** I am on an active shift
     - **Pre-Condition** I am not on break
@@ -85,20 +99,6 @@ Starting with the user stories;
     - I tell STC I am done with my shift
     - **Post-Condition** My shift is stopped
         - STC stops accruing Shift Time
-
-- As an Employee, I want to end a break
-    - **Pre-Condition** I am on break
-    - I ask STC to stop recording my break
-    - **Post-Condition** I am off break
-        - STC resumes accruing Shift Time
-        - STC stops accruing Break Time  
-
-- As an Employee, I want to end my lunch
-    - **Pre-Condition** I am at lunch
-    - I tell STC to stop recording my lunch
-    - **Post-Condition** I am off lunch
-        - STC resumes accruing Shift Time
-        - STC stops accruing Lunch Time  
 
 ## Design
 
