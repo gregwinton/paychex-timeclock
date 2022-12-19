@@ -1,15 +1,30 @@
-# sample-time-clock
+# Simple Time Clock
 
-Projects fullfills the requirements as set forth in the Interview Candidate Project.pdf, and copied here:
+The Simple Time Clock application was originally created as an exercise in an interview process for a job which offer failed to come through.
+But lest anything useful go to waste, I have decided to use it as a sample of my work. 
 
-## Requirements (from 
-Allow user to be identified using a unique ID assigned to each employee.
-1. Users that cannot be identified should not be able to use the application.
-    1. Allow users to start a work shift.
-1. Do not allow users to start multiple shifts simultaneously.
-    1. Allow users to end a work shift.
-1. Do not allow users to start a shift during an active shift.
-    1. Allow users to start/end a break, but only during an active shift. o Do not allow employees to end a shift if a break is active.
+What I hope to convey through this example is both my approach to development, as evidenced both by the excellence in design, architecture,
+and code to which I aspire as well as the paper trail revealed in the git logs. I am passionate about software quality from high level design
+down through the nuts and bolts of implementation. I believe this codebase reveals some of that passion.
+
+Enjoy!
+
+Greg (18 December 2022)
+
+## Interview Candidate Requirements
+This project was created to specifically fulfill the requirements specified by the Interview Candidate Project instructions, which are reproduced below:
+
+### Simple Time Clock Application
+_Create an application that represents a simple time clock. You are free to use the programming languange if your choice.
+The application must follow the requirements listed below._
+
+1. Allow user to be identified using a unique ID assigned to each employee.
+    1. Users that cannot be identified should not be able to use the application.
+1. Allow users to start a work shift.
+    1. Do not allow users to start multiple shifts simultaneously.
+1. Allow users to end a work shift.
+    1. Do not allow users to start a shift during an active shift.
+1. Allow users to start/end a break, but only during an active shift. o Do not allow employees to end a shift if a break is active.
 1. Allow users to start/end a lunch, but only during an active shift. o Do not allow employees to end a shift if a lunch is active.
 1. All shift data performed by users should be recorded and made available upon returning to the application.
 1. (Optional) Allow new users to register themselves in the application.
