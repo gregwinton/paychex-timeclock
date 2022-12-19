@@ -204,3 +204,10 @@ As it is, the result still could use a bit of polish:
 
 ## Known Issues
 - Date display on WorkShift fragment - be smarter about date inclusion, don't need it for every date/time.
+
+## Running the Application
+Unfortunately there is no easy way to run this application short of building it. To wit:
+1. Download and install the [Android Developer Studio] (https://developer.android.com/studio)
+1. Clone this repository: `git clone git@github.com:gregwinton/sample-time-clock.git`
+1. Open the project in the afore-installed Android Developer Studio
+1. Run the result on your device or, if you are truly brave (or desparate), in the emulator
