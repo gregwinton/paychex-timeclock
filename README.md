@@ -3,9 +3,11 @@
 The Simple Time Clock application was originally created as an exercise in an interview process for a job which offer failed to come through.
 But lest anything useful go to waste, I have decided to use it as a sample of my work. 
 
-What I hope to convey through this example is both my approach to development, as evidenced both by the excellence in design, architecture,
-and code to which I aspire as well as the paper trail revealed in the git logs. I am passionate about software quality from high level design
-down through the nuts and bolts of implementation. I believe this codebase reveals some of that passion.
+Through this example I hope to convey my approach to development: both by the excellence in design, architecture,
+and code to which I aspire, and the methodical refinement of code and concept as evidenced in the git commit logs.
+I am passionate about software quality from high level design down through the nuts and bolts of implementation.
+
+I believe this codebase reveals at least some of that passion.
 
 Enjoy!
 
@@ -24,8 +26,10 @@ The application must follow the requirements listed below._
     1. Do not allow users to start multiple shifts simultaneously.
 1. Allow users to end a work shift.
     1. Do not allow users to start a shift during an active shift.
-1. Allow users to start/end a break, but only during an active shift. o Do not allow employees to end a shift if a break is active.
-1. Allow users to start/end a lunch, but only during an active shift. o Do not allow employees to end a shift if a lunch is active.
+1. Allow users to start/end a break, but only during an active shift. 
+    1. Do not allow employees to end a shift if a break is active.
+1. Allow users to start/end a lunch, but only during an active shift.
+    1. Do not allow employees to end a shift if a lunch is active.
 1. All shift data performed by users should be recorded and made available upon returning to the application.
 1. (Optional) Allow new users to register themselves in the application.
 1. (Optional) Allow for two types of users in the application; administrators and non-
@@ -41,9 +45,65 @@ employee’s shift activity.
 
 Even without the optional requirements, this is a tall set of requirements to implement over a relatively short time - 3 days, in this case. So rather than trying to do too much too quickly, I designed and built a high quality, maintainable and extensible MVP focused only on the non-optional requirements.
 
-As it is, the result still could use a bit of polish:
+Starting with the user stories;
+
+- As an Employee, I want to use the Simple Time Clock (STC) Application
+    - **Pre-Condition** I am not currently using STC 
+    - I launch the STC application
+    - I tell STC I am the active employee
+    - **Post-Condition** I am the active employee and can start a shift
+
+- As an Employee, I want to start a shift
+    - **Pre-Condition** I am the active employee 
+    - **Pre-Condition** I do not have an active shift
+    - I tell STC to I have started my shift
+    - **Post-Condition** My shift is started
+        - STC starts accruing Shift Time
+
+- As an Employee, I want to take a break
+    - **Pre-Condition** I am on an active shift
+    - **Pre-Condition** I am not on break
+    - **Pre-Condition** I am not at lunch
+    - I tell STC I have started my break
+    - **Post-Condition** I am on break
+        - STC stops accruing Shift Time
+        - STC begins accruing Break Time  
+
+- As an Employee, I want to take lunch
+    - **Pre-Condition** I am on an active shift
+    - **Pre-Condition** I am not at lunch
+    - **Pre-Condition** I am not on break
+    - I tell STC I have started lunch
+    - **Post-Condition** I am at lunch
+        - STC stops accruing Shift Time
+        - STC begins accruing Lunch Time  
+
+- As an Employee, I want to end a shift
+    - **Pre-Condition** I am on an active shift
+    - **Pre-Condition** I am not on break
+    - **Pre-Condition** I am not at lunch
+    - I tell STC I am done with my shift
+    - **Post-Condition** My shift is stopped
+        - STC stops accruing Shift Time
+
+- As an Employee, I want to end a break
+    - **Pre-Condition** I am on break
+    - I ask STC to stop recording my break
+    - **Post-Condition** I am off break
+        - STC resumes accruing Shift Time
+        - STC stops accruing Break Time  
+
+- As an Employee, I want to end my lunch
+    - **Pre-Condition** I am at lunch
+    - I tekk STC to stop recording my lunch
+    - **Post-Condition** I am off lunch
+        - STC resumes accruing Shift Time
+        - STC stops accruing Lunch Time  
+
 
 ## Next Steps
+As it is, the result still could use a bit of polish:
+
 - add an application icon
 - change user selection from current full page list of users to a more traditional login window (albeit without password)
     - allow user to register
