@@ -95,11 +95,100 @@ Starting with the user stories;
 
 - As an Employee, I want to end my lunch
     - **Pre-Condition** I am at lunch
-    - I tekk STC to stop recording my lunch
+    - I tell STC to stop recording my lunch
     - **Post-Condition** I am off lunch
         - STC resumes accruing Shift Time
         - STC stops accruing Lunch Time  
 
+## Design
+
+We will start with a Model-View-ViewModel-Store architecture, which adds a layer to the traditional MVVM which abstracts the persistent
+storage of Model data.
+
+### Model
+From the user stories, we see two main objects emerge, the Employee and the WorkShift. 
+
+#### Employee
+For our purposes, an Employee is rather a simple object; per the requirements, we only need to provide a unique id for the employee. 
+From experience, we know that a human-readable name is an implied requirement of any entity in a system, users in particular. So we 
+can define our Employee object as:
+```
+Employee {
+    id: Guid
+    name: String
+}
+```
+with the appropriate accessor methods.
+
+#### WorkShift
+The WorkShift object is mostly a collection of time spans - shift start to finish, break start to finish, lunch start to finish.
+And because there is a requirement for persistance, we will want a unique id for each shift, at the least. So our first pass might
+look like this:
+```
+WorkShift {
+    id: Guid
+    shiftStart: DateTime
+    shiftEnd: DateTime
+    breakStart: DateTime
+    breakEnd: DateTime
+    lunchStart: DateTime
+    lunchEnd: DateTime
+}
+```
+again, with appropriate accessors.
+
+#### BaseModel
+As we begin to implement this model, we find ourselves repeating code both across the Employee and WorkShift class, and within the Workshift class.
+Since both `Employee` and `WorkShift` classes use a `Guid` as a unique id, the code that manages this id can be extracted into a common base class, which
+for lack of a better term has been called `BaseModel` here:
+```
+BaseModel {
+    id: Guid
+}
+```
+with only the id get accessor publicly available. There is only a protected constructor method, so only derived classes can be instantiated.
+
+#### TimeSlice
+Within the `WorkShift` class, we find ourselves writing duplicate code to managing the elapsed times of shifts, breaks, and lunches. 
+This common functionality has been abstracted out into the `TimeSlice` class:
+```
+TimeSlice: {
+    start: DateTime
+    end: DateTime
+}
+```
+as well as accessor methods, including those that indicate the _state_ of the `TimeSlice` instance: 
+- If `start` is `nil`, the slice is **inactive**.
+- If `start` is not `nil` and `end` is `nil, the slice is **active**
+- If `start` and `end` are both not `nil`, the slice is **complete**
+
+#### Final Class Descriptions
+```
+BaseModel {
+    id: Guid
+}
+```
+
+```
+Employee : BaseModel {
+    name: string
+}
+```
+
+```
+TimeSlice {
+    start: DateTime
+    end: DateTime
+}
+```
+
+```
+WorkShift : BaseModel {
+    shift: TimeSlice
+    break: TimeSlice
+    lunch: TimeSlice
+}
+```
 
 ## Next Steps
 As it is, the result still could use a bit of polish:
